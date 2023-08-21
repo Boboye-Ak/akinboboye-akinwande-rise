@@ -12,7 +12,8 @@ const File = db.define("file", {
         type: Sequelize.NUMBER
     },
     folder_name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        defaultValue:null
     },
     cloudinary_url: {
         type: Sequelize.STRING
