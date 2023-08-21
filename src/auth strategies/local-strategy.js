@@ -8,7 +8,7 @@ const localStrategy = new LocalStrategy(
         console.log("trying to login")
         try {
             console.log("trying local strategy")
-            const user = await User.findOne({ email: username })
+            const user = await User.findOne({where: {email: username} })
             if (!user) return done(null, false)
             const auth = await bcrypt.compare(password, user.password)
             if (!auth) {

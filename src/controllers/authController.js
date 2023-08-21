@@ -1,7 +1,7 @@
 const User = require("../models/Users")
 const bcrypt = require("bcrypt")
 const validator = require("validator")
-const passport = require("passport")
+
 module.exports.signup_post = async (req, res) => {
     // #swagger.description = 'Endpoint for users to signup'
     try {
@@ -12,7 +12,7 @@ module.exports.signup_post = async (req, res) => {
         if (!validator.isEmail(email)) {
             return res.status(400).json({ message: "Please enter a valid email address" })
         }
-        const existingUserWithEmail = await User.findOne({ email: email })
+        const existingUserWithEmail = await User.findOne({where: {email: email} })
         if (existingUserWithEmail) {
             return res.status(409).json({ message: "User with this email already exists" })
         }
@@ -34,19 +34,3 @@ module.exports.signup_post = async (req, res) => {
 
 }
 
-module.exports.login_post = (req, res, next) => {
-    // #swagger.description = 'Endpoint for users to login'
-    passport.authenticate("local", (err, user, info) => {
-        console.log(user)
-        if (err) throw err
-        if (!user)
-            res.status(404).json({ message: "Could not login. Check email address and password", status: 404 })
-        else {
-            req.logIn(user, (err) => {
-                if (err) throw err
-                console.log(req.user)
-                res.status(200).json({ message: "Successfully Authenticated", status: 200 })
-            })
-        }
-    })
-}
