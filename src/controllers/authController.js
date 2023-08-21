@@ -1,6 +1,7 @@
 const User = require("../models/Users")
 const bcrypt = require("bcrypt")
 const validator = require("validator")
+const passport = require("passport")
 module.exports.signup_post = async (req, res) => {
     // #swagger.description = 'Endpoint for users to signup'
     try {
@@ -47,5 +48,5 @@ module.exports.login_post = (req, res, next) => {
                 res.status(200).json({ message: "Successfully Authenticated", status: 200 })
             })
         }
-    })(req, res, next)
+    })
 }
