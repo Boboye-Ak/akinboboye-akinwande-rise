@@ -22,7 +22,7 @@ module.exports.signup_post = async (req, res) => {
             full_name: full_name,
             password: hashedPassword
         })
-        req.logIn(user, async (err) => {
+        req.logIn(newUser, async (err) => {
             if (err) throw err
             return res.status(200).json({ message: "New User created successfully", user_id: newUser.id, full_name: newUser.full_name, email: newUser.email })
         })
