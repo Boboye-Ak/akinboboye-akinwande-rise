@@ -1,5 +1,5 @@
-const {Sequelize}=require("sequelize")
+const { Sequelize } = require("sequelize")
 
-const db = new Sequelize(`postgres://postgres:${process.env.DBPASS}@localhost/Books`)
+const db = new Sequelize(`postgres://${process.env.DB_USER}:${process.env.DB_PASS}@localhost/rise-assessment`)
 
-module.exports=db
+module.exports = db

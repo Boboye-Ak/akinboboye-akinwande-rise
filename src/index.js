@@ -5,10 +5,21 @@ const session = require("express-session")
 const cookieParser = require("cookie-parser")
 const express = require("express")
 const cors = require("cors")
-const {localStrategy}=require("./auth strategies/local-strategy")
+const { localStrategy } = require("./auth strategies/local-strategy")
 const passport = require("passport")
 const PORT = process.env.PORT || 5000
 const app = express()
+const db = require("./connectDB/db")
+
+const authRouter = require("./routers/authRouter")
+const fileRouter = require("./routers/fileRouter")
+//ConnectDB
+db.authenticate()
+    .then(() => { console.log("Database connected...") })
+    .catch((e) => {
+        console.log(e)
+        console.log("error connecting to database...")
+    })
 
 
 //Middleware
@@ -40,7 +51,7 @@ app.use(passport.session())
 // Serialize and deserialize users
 passport.serializeUser(async (user, done) => {
     console.log("serializing user")
-    return done(null, user._id)
+    return done(null, user.id)
 })
 
 passport.deserializeUser(async (id, done) => {
@@ -50,6 +61,18 @@ passport.deserializeUser(async (id, done) => {
 
 // Configure Passport with local strategy
 passport.use(localStrategy)
+
+//Routing
+app.use("/auth", authRouter)
+app.use("/files", fileRouter)
+
+
+
+//Test endpoint
+app.get("/", (req, res) => {
+    // #swagger.description = 'Endpoint to test the server'
+    res.status(200).json({ hello: "hello" })
+})
 
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`)
