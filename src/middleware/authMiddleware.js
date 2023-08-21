@@ -8,7 +8,7 @@ const userRequiresAuth = async (req, res, next) => {
         return res.status(401).json({ message: "Authentication is needed" })
     } else {
         const userId = req.user
-        const user = await User.findById(userId)
+        const user = await User.findByPk(userId)
         if (!user) {
             return res.status(404).json({ message: "User not found. It might have been deleted" })
         }

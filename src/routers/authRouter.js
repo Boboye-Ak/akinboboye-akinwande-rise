@@ -1,6 +1,7 @@
 const express = require("express")
-const { signup_post, } = require("../controllers/authController")
+const { signup_post, getMyUser_get, logout_post, } = require("../controllers/authController")
 const passport = require("passport")
+const { userRequiresAuth } = require("../middleware/authMiddleware")
 const router = express.Router()
 
 router.post("/signup", signup_post)
@@ -20,6 +21,9 @@ router.post("/login", (req, res, next) => {
         }
     })(req, res, next)
 })
+router.get("/myuser", [userRequiresAuth], getMyUser_get)
+
+router.post("/logout", [userRequiresAuth], logout_post)
 
 
 

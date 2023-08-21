@@ -34,3 +34,30 @@ module.exports.signup_post = async (req, res) => {
 
 }
 
+
+module.exports.getMyUser_get = async (req, res) => {
+    try {
+        const user = req.currentUser
+        return res.status(200).json({ user_id: user.id, full_name: user.full_name, email: user.email, folders: user.folders, isAdmin: user.isAdmin })
+
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json({ message: "Server Error" })
+    }
+
+}
+
+module.exports.logout_post = async (req, res) => {
+    try {
+        const user = req.currentUser
+        if (user) {
+            req.session.destroy()
+            return res.status(200).json({ message: "Logged out successfully" })
+        }
+        return res.status(200).json({ message: "Logged out successfully" })
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json({ message: "Server Error" })
+    }
+}
+

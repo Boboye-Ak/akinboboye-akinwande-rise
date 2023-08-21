@@ -2,6 +2,8 @@ require("dotenv").config()
 const swaggerUi = require('swagger-ui-express')
 const swaggerFile = require('../swagger_output.json')
 const session = require("express-session")
+const Sequelize = require("sequelize")
+const SequelizeStore = require("connect-session-sequelize")(session.Store)
 const cookieParser = require("cookie-parser")
 const express = require("express")
 const cors = require("cors")
@@ -21,6 +23,20 @@ db.authenticate()
         console.log("error connecting to database...")
     })
 
+    const Session = db.define('session', {
+        sid: {
+            type: Sequelize.STRING,
+            primaryKey: true,
+        },
+        expires: Sequelize.DATE,
+        data: Sequelize.TEXT,
+    });
+
+const sessionStore = new SequelizeStore({
+    db: db,
+    table: "session"
+});
+
 
 //Middleware
 app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
@@ -35,9 +51,9 @@ app.use(express.json())
 app.use(
     session({
         secret: process.env.USER_SESSION_SECRET,
-        resave: true,
+        resave: false,
         saveUninitialized: true,
-        //store: new MongoStore({ mongoUrl: MONGODB_URI }),
+        store: sessionStore,
         cookie: {
             maxAge: 1000 * 60 * 60 * 24 * 7,
         },
