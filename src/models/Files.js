@@ -22,4 +22,4 @@ const File = db.define("file", {
     }
 })
 
-module.exports=File
+module.exports = File
