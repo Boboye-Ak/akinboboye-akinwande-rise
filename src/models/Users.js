@@ -17,7 +17,11 @@ const User = db.define("user", {
     folders: {
         type: Sequelize.ARRAY(Sequelize.STRING),
         defaultValue: [],
+    },
+    isAdmin:{
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
     }
 })
 
-module.exports=User
+module.exports = User

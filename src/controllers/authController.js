@@ -12,7 +12,7 @@ module.exports.signup_post = async (req, res) => {
         if (!validator.isEmail(email)) {
             return res.status(400).json({ message: "Please enter a valid email address" })
         }
-        const existingUserWithEmail = await User.findOne({where: {email: email} })
+        const existingUserWithEmail = await User.findOne({ where: { email: email } })
         if (existingUserWithEmail) {
             return res.status(409).json({ message: "User with this email already exists" })
         }
@@ -25,7 +25,7 @@ module.exports.signup_post = async (req, res) => {
         })
         req.logIn(newUser, async (err) => {
             if (err) throw err
-            return res.status(200).json({ message: "New User created successfully", user_id: newUser.id, full_name: newUser.full_name, email: newUser.email })
+            return res.status(200).json({ message: "New User created successfully", user_id: newUser.id, full_name: newUser.full_name, email: newUser.email, folders: newUser.folders, isAdmin: newUser.isAdmin })
         })
     } catch (err) {
         console.log(err)
