@@ -23,6 +23,9 @@ const File = db.define("file", {
     }, isFlagged: {
         type: Sequelize.BOOLEAN,
         defaultValue: false
+    }, flaggers: {
+        type: Sequelize.ARRAY(Sequelize.NUMBER),
+        defaultValue: []
     }
 })
 

@@ -129,8 +129,6 @@ module.exports.downloadFile_get = async (req, res) => {
     }
 }
 
-
-
 module.exports.deleteFile_delete = async (req, res) => {
     try {
         const { id: fileId } = req.params
@@ -161,13 +159,16 @@ module.exports.flagFile_admin_put = async (req, res) => {
         if (!fileToBeFlagged) {
             return res.status(404).json({ message: "File not found" })
         }
-        await deleteCloudinaryFile(fileToBeFlagged.cloudinary_url)
-        fileToBeFlagged.isFlagged = true
+        !fileToBeFlagged.flaggers.includes(currentUser.id) ? fileToBeFlagged.flaggers.push(currentUser.id) : null
+        if (fileToBeFlagged.flaggers.length >= 2) {
+            await deleteCloudinaryFile(fileToBeFlagged.cloudinary_url)
+            fileToBeFlagged.isFlagged = true
+        }
+
         await fileToBeFlagged.save()
         return res.status(200).json({ message: "File Flagged Successfully", flaggedFile: fileToBeFlagged })
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: "server error" })
     }
-
 }
