@@ -1,4 +1,4 @@
-const { uploadFile } = require("../configs/cloudinary")
+const { uploadFile, deleteCloudinaryFile } = require("../configs/cloudinary")
 const File = require("../models/Files")
 const User = require("../models/Users")
 const axios = require("axios")
@@ -10,8 +10,10 @@ module.exports.getFileList_get = async (req, res) => {
         const page = parseInt(req.query.page) || 1 // Default to page 1
         const limit = parseInt(req.query.limit) || 20 // Default to limit of 20 items per page
         const folder = req.query.folder
+        const hideDeletedFiles = parseInt(req.query.hideDeletedFiles)
         const queryObject = {}
         folder && currentUser.folders.includes(folder) ? queryObject.folder = folder : null
+        hideDeletedFiles ? queryObject.isUploaded = true : null
         queryObject.uploader_id = currentUser.id
         const files = await File.findAll({
             where: queryObject,
@@ -113,31 +115,37 @@ module.exports.downloadFile_get = async (req, res) => {
         if (!file) {
             return res.status(404).json({ message: "File not found" })
         }
-          if (file.uploader_id != currentUser.id && !currentUser.isAdmin) {
-              return res.status(401).json({ message: "Unauthorized! Only file owner and admin can download" })
-          }
+        if (file.uploader_id != currentUser.id && !currentUser.isAdmin) {
+            return res.status(401).json({ message: "Unauthorized! Only file owner and admin can download" })
+        }
         const response = await axios.get(file.cloudinary_url, { responseType: 'arraybuffer' });
         const contentType = 'application/octet-stream';
         res.setHeader('Content-Disposition', `attachment; filename="${file.file_name}"`);
         res.setHeader('Content-Type', contentType);
         res.send(response.data);
-
-
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: "server error" })
     }
-
-
 }
 
 
 
 module.exports.deleteFile_delete = async (req, res) => {
-
     try {
+        const { id: fileId } = req.params
         const currentUser = req.currentUser
-
+        const fileToBeDeleted = await File.findOne({ where: { isUploaded: true, id: fileId } })
+        if (!fileToBeDeleted) {
+            return res.status(404).json({ message: "File not found" })
+        }
+        if (fileToBeDeleted.uploader_id != currentUser.id && !currentUser.isAdmin) {
+            return res.status(401).json({ message: "Only file owner and admin can delete a file" })
+        }
+        await deleteCloudinaryFile(fileToBeDeleted.cloudinary_url)
+        fileToBeDeleted.isUploaded = false
+        await fileToBeDeleted.save()
+        return res.status(200).json({ message: "File Deleted Successfully", deletedFile: fileToBeDeleted })
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: "server error" })
@@ -145,10 +153,18 @@ module.exports.deleteFile_delete = async (req, res) => {
 }
 
 
-module.exports.flagFile_admin_post = async (req, res) => {
-
+module.exports.flagFile_admin_put = async (req, res) => {
     try {
-
+        const { id: fileId } = req.params
+        const currentUser = req.currentUser
+        const fileToBeFlagged = await File.findOne({ where: { isUploaded: true, id: fileId, isFlagged: false } })
+        if (!fileToBeFlagged) {
+            return res.status(404).json({ message: "File not found" })
+        }
+        await deleteCloudinaryFile(fileToBeFlagged.cloudinary_url)
+        fileToBeFlagged.isFlagged = true
+        await fileToBeFlagged.save()
+        return res.status(200).json({ message: "File Flagged Successfully", flaggedFile: fileToBeFlagged })
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: "server error" })

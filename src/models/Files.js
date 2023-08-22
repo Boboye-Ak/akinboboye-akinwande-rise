@@ -13,13 +13,16 @@ const File = db.define("file", {
     },
     folder_name: {
         type: Sequelize.STRING,
-        defaultValue:null
+        defaultValue: null
     },
     cloudinary_url: {
         type: Sequelize.STRING
     },
     isUploaded: {
         type: Sequelize.BOOLEAN
+    }, isFlagged: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
     }
 })
 

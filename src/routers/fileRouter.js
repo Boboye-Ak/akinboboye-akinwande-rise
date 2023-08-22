@@ -1,6 +1,6 @@
 const express = require("express")
-const { getFileList_get, getFileData_get, getFolderList_get, addFolder_post, uploadFile_post, downloadFile_get } = require("../controllers/fileController")
-const { userRequiresAuth } = require("../middleware/authMiddleware")
+const { getFileList_get, getFileData_get, getFolderList_get, addFolder_post, uploadFile_post, downloadFile_get, deleteFile_delete, flagFile_admin_put } = require("../controllers/fileController")
+const { userRequiresAuth, userRequiresAdmin } = require("../middleware/authMiddleware")
 const { upload } = require("../configs/multer")
 const router = express.Router()
 
@@ -11,6 +11,8 @@ router.get("/folders", [userRequiresAuth], getFolderList_get)
 router.post("/folders", [userRequiresAuth], addFolder_post)
 router.post("/upload", [userRequiresAuth, upload.single("file")], uploadFile_post)
 router.get("/download/:id", [userRequiresAuth], downloadFile_get)
+router.delete("/delete/:id", [userRequiresAuth], deleteFile_delete)
+router.put("/flag/:id", [userRequiresAuth, userRequiresAdmin], flagFile_admin_put)
 
 
 
