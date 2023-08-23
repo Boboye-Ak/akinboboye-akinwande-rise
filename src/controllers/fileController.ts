@@ -1,19 +1,20 @@
+import { Request, Response } from "express"
 const { uploadFile, deleteCloudinaryFile } = require("../configs/cloudinary")
-const File = require("../models/Files")
-const User = require("../models/Users")
-const axios = require("axios")
+import File from "../models/Files"
+import User from "../models/Users"
+import axios from "axios"
 
-module.exports.getFileList_get = async (req, res) => {
+export const getFileList_get = async (req: Request, res: Response) => {
     // #swagger.description = 'Endpoint to get list of file data'
     try {
         const currentUser = req.currentUser
-        const page = parseInt(req.query.page) || 1 // Default to page 1
-        const limit = parseInt(req.query.limit) || 20 // Default to limit of 20 items per page
+        const page: number = parseInt(req.query.page as string, 10) || 1 // Default to page 1
+        const limit: number = parseInt(req.query.limit as string, 10) || 20 // Default to limit of 20 items per page
         const folder = req.query.folder
-        const hideDeletedFiles = parseInt(req.query.hideDeletedFiles)
-        const queryObject = {}
-        folder && currentUser.folders.includes(folder) ? queryObject.folder = folder : null
-        hideDeletedFiles ? queryObject.isUploaded = true : null
+        const hideDeletedFiles: number = parseInt(req.query.hideDeletedFiles as string, 10)
+        const queryObject: any = {}
+        folder && currentUser.folders.includes(folder) ? (queryObject.folder = folder) : null
+        hideDeletedFiles ? (queryObject.isUploaded = true) : null
         queryObject.uploader_id = currentUser.id
         const files = await File.findAll({
             where: queryObject,
@@ -25,15 +26,14 @@ module.exports.getFileList_get = async (req, res) => {
         console.log(err)
         return res.status(500).json({ message: "server error" })
     }
-
 }
 
-module.exports.getFileData_get = async (req, res) => {
+export const getFileData_get = async (req: Request, res: Response) => {
     // #swagger.description = 'Endpoint to get data for a single file'
     try {
         const { id: fileId } = req.params
         const currentUser = req.currentUser
-        const file = await File.findOne({ where: { id: fileId } })
+        const file: any = await File.findOne({ where: { id: fileId } })
         if (!file) {
             return res.status(404).json({ message: "File not found." })
         }
@@ -41,15 +41,13 @@ module.exports.getFileData_get = async (req, res) => {
             return res.status(401).json({ message: "Unauthorized! Sign in as admin or file owner" })
         }
         return res.status(200).json(file)
-
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: "server error" })
     }
-
 }
 
-module.exports.getFolderList_get = async (req, res) => {
+export const getFolderList_get = async (req: Request, res: Response) => {
     try {
         const currentUser = req.currentUser
         return res.status(200).json(currentUser.folders)
@@ -59,7 +57,7 @@ module.exports.getFolderList_get = async (req, res) => {
     }
 }
 
-module.exports.addFolder_post = async (req, res) => {
+export const addFolder_post = async (req: Request, res: Response) => {
     try {
         const { folderName } = req.body
         if (!folderName) {
@@ -76,10 +74,9 @@ module.exports.addFolder_post = async (req, res) => {
         console.log(err)
         return res.status(500).json({ message: "server error" })
     }
-
 }
 
-module.exports.uploadFile_post = async (req, res) => {
+export const uploadFile_post = async (req: Request, res: Response) => {
     // #swagger.description = 'Endpoint to upload a file'
     try {
         const currentUser = req.currentUser
@@ -88,9 +85,17 @@ module.exports.uploadFile_post = async (req, res) => {
             return res.status(400).json({ message: "Please upload file as form data" })
         }
         const { size, originalname } = req.file
-        const fileUrl = await uploadFile(req.file)
-        const newFileObject = { uploader_id: currentUser.id, file_name: originalname, file_size: size, cloudinary_url: fileUrl, isUploaded: true }
-        folderName ? newFileObject.folder_name = folderName : null
+        const { fileUrl, publicId } = await uploadFile(req.file)
+        const newFileObject = {
+            uploader_id: currentUser.id,
+            file_name: originalname,
+            file_size: size,
+            cloudinary_url: fileUrl,
+            public_id: publicId,
+            isUploaded: true,
+            folder_name: null,
+        }
+        folderName ? (newFileObject.folder_name = folderName) : null
         const newFile = await File.create(newFileObject)
         console.log(newFile)
         if (!currentUser.folders.includes(folderName)) {
@@ -98,75 +103,82 @@ module.exports.uploadFile_post = async (req, res) => {
             await User.update({ folders: currentUser.folders }, { where: { id: currentUser.id } })
         }
         return res.status(200).json(newFile)
-
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: "server error" })
     }
-
 }
 
-module.exports.downloadFile_get = async (req, res) => {
+export const downloadFile_get = async (req: Request, res: Response) => {
     // #swagger.description = 'Endpoint to download a single file'
     try {
         const currentUser = req.currentUser
         const { id: fileId } = req.params
-        const file = await File.findByPk(fileId)
+        const file: any = await File.findByPk(fileId)
         if (!file) {
             return res.status(404).json({ message: "File not found" })
         }
         if (file.uploader_id != currentUser.id && !currentUser.isAdmin) {
-            return res.status(401).json({ message: "Unauthorized! Only file owner and admin can download" })
+            return res
+                .status(401)
+                .json({ message: "Unauthorized! Only file owner and admin can download" })
         }
-        const response = await axios.get(file.cloudinary_url, { responseType: 'arraybuffer' });
-        const contentType = 'application/octet-stream';
-        res.setHeader('Content-Disposition', `attachment; filename="${file.file_name}"`);
-        res.setHeader('Content-Type', contentType);
-        res.send(response.data);
+        const response = await axios.get(file.cloudinary_url, { responseType: "arraybuffer" })
+        const contentType = "application/octet-stream"
+        res.setHeader("Content-Disposition", `attachment; filename="${file.file_name}"`)
+        res.setHeader("Content-Type", contentType)
+        res.send(response.data)
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: "server error" })
     }
 }
 
-module.exports.deleteFile_delete = async (req, res) => {
+export const deleteFile_delete = async (req: Request, res: Response) => {
     try {
         const { id: fileId } = req.params
         const currentUser = req.currentUser
-        const fileToBeDeleted = await File.findOne({ where: { isUploaded: true, id: fileId } })
+        const fileToBeDeleted: any = await File.findOne({ where: { isUploaded: true, id: fileId } })
         if (!fileToBeDeleted) {
             return res.status(404).json({ message: "File not found" })
         }
         if (fileToBeDeleted.uploader_id != currentUser.id && !currentUser.isAdmin) {
             return res.status(401).json({ message: "Only file owner and admin can delete a file" })
         }
-        await deleteCloudinaryFile(fileToBeDeleted.cloudinary_url)
+        await deleteCloudinaryFile(fileToBeDeleted.public_id, fileToBeDeleted.cloudinary_url)
         fileToBeDeleted.isUploaded = false
         await fileToBeDeleted.save()
-        return res.status(200).json({ message: "File Deleted Successfully", deletedFile: fileToBeDeleted })
+        return res
+            .status(200)
+            .json({ message: "File Deleted Successfully", deletedFile: fileToBeDeleted })
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: "server error" })
     }
 }
 
-
-module.exports.flagFile_admin_put = async (req, res) => {
+export const flagFile_admin_put = async (req: Request, res: Response) => {
     try {
         const { id: fileId } = req.params
-        const currentUser = req.currentUser
-        const fileToBeFlagged = await File.findOne({ where: { isUploaded: true, id: fileId, isFlagged: false } })
+        const currentUser: any = req.currentUser
+        const fileToBeFlagged: any = await File.findOne({
+            where: { isUploaded: true, id: fileId, isFlagged: false },
+        })
         if (!fileToBeFlagged) {
             return res.status(404).json({ message: "File not found" })
         }
-        !fileToBeFlagged.flaggers.includes(currentUser.id) ? fileToBeFlagged.flaggers.push(currentUser.id) : null
+        !fileToBeFlagged.flaggers.includes(currentUser.id)
+            ? fileToBeFlagged.flaggers.push(currentUser.id)
+            : null
         if (fileToBeFlagged.flaggers.length >= 2) {
-            await deleteCloudinaryFile(fileToBeFlagged.cloudinary_url)
+            await deleteCloudinaryFile(fileToBeFlagged.public_id, fileToBeFlagged.cloudinary_url)
             fileToBeFlagged.isFlagged = true
         }
 
         await fileToBeFlagged.save()
-        return res.status(200).json({ message: "File Flagged Successfully", flaggedFile: fileToBeFlagged })
+        return res
+            .status(200)
+            .json({ message: "File Flagged Successfully", flaggedFile: fileToBeFlagged })
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: "server error" })

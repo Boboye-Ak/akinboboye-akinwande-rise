@@ -1,0 +1,24 @@
+{
+    "env": {
+      "node": true,
+      "es6": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "prettier"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "plugins": ["@typescript-eslint"],
+    "rules": {
+      "indent": ["error", 2],
+      "linebreak-style": ["error", "unix"],
+      "quotes": ["error", "double"],
+      "semi": ["error", "always"],
+      "@typescript-eslint/explicit-module-boundary-types": "off", // Allow implicit return types in functions
+      "@typescript-eslint/no-explicit-any": "off", // Allow using 'any' type
+      "@typescript-eslint/no-var-requires": "off", // Allow 'require' in TypeScript files
+      "@typescript-eslint/no-unused-vars": "warn" // Ignore unused variables starting with an underscore
+    }
+  }
+  
