@@ -2,12 +2,16 @@ import { Request, Response } from "express"
 import bcrypt from "bcrypt"
 import validator from "validator"
 import User from "../models/Users"
+import { isPasswordValid } from "../utils/password-validator"
 
 export const signup_post = async (req: Request, res: Response) => {
     try {
         const { full_name, email, password } = req.body
         if (!full_name || !email || !password) {
             return res.status(400).json({ message: "Please enter full name, email, and password" })
+        }
+        if(!isPasswordValid(password)){
+            return res.status(400).json({message:"Password too weak. Password must contain uppercase, lowercase, numbers, symbol and at least 8 characters"})
         }
         if (!validator.isEmail(email)) {
             return res.status(400).json({ message: "Please enter a valid email address" })

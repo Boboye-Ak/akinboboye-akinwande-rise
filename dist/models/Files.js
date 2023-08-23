@@ -7,34 +7,34 @@ const sequelize_1 = require("sequelize");
 const db_1 = __importDefault(require("../connectDB/db"));
 const File = db_1.default.define("file", {
     uploader_id: {
-        type: sequelize_1.DataTypes.NUMBER
+        type: sequelize_1.DataTypes.NUMBER,
     },
     file_name: {
-        type: sequelize_1.DataTypes.STRING
+        type: sequelize_1.DataTypes.STRING,
     },
     file_size: {
-        type: sequelize_1.DataTypes.NUMBER
+        type: sequelize_1.DataTypes.NUMBER,
     },
     folder_name: {
         type: sequelize_1.DataTypes.STRING,
-        defaultValue: null
+        defaultValue: null,
     },
     cloudinary_url: {
-        type: sequelize_1.DataTypes.STRING
+        type: sequelize_1.DataTypes.STRING,
     },
     public_id: {
-        type: sequelize_1.DataTypes.STRING
+        type: sequelize_1.DataTypes.STRING,
     },
     isUploaded: {
-        type: sequelize_1.DataTypes.BOOLEAN
+        type: sequelize_1.DataTypes.BOOLEAN,
     },
     isFlagged: {
         type: sequelize_1.DataTypes.BOOLEAN,
-        defaultValue: false
+        defaultValue: false,
     },
     flaggers: {
         type: sequelize_1.DataTypes.ARRAY(sequelize_1.DataTypes.NUMBER),
-        defaultValue: []
-    }
+        defaultValue: [],
+    },
 });
 exports.default = File;

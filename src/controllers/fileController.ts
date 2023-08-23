@@ -161,21 +161,24 @@ export const flagFile_admin_put = async (req: Request, res: Response) => {
     try {
         const { id: fileId } = req.params
         const currentUser: any = req.currentUser
-        const fileToBeFlagged: any = await File.findOne({
+        let fileToBeFlagged: any = await File.findOne({
             where: { isUploaded: true, id: fileId, isFlagged: false },
         })
         if (!fileToBeFlagged) {
             return res.status(404).json({ message: "File not found" })
         }
-        !fileToBeFlagged.flaggers.includes(currentUser.id)
-            ? fileToBeFlagged.flaggers.push(currentUser.id)
-            : null
+        const flaggers = fileToBeFlagged.flaggers
+        if (!flaggers.includes(currentUser.id)) {
+            flaggers.push(currentUser.id)
+            await File.update({ flaggers: flaggers }, { where: { id: fileToBeFlagged.id } })
+        }
         if (fileToBeFlagged.flaggers.length >= 2) {
             await deleteCloudinaryFile(fileToBeFlagged.public_id, fileToBeFlagged.cloudinary_url)
-            fileToBeFlagged.isFlagged = true
+            await File.update({ isFlagged: true, isUploaded:false }, { where: { id: fileToBeFlagged.id } })
         }
-
-        await fileToBeFlagged.save()
+        fileToBeFlagged = await File.findOne({
+            where: { id: fileId },
+        })
         return res
             .status(200)
             .json({ message: "File Flagged Successfully", flaggedFile: fileToBeFlagged })

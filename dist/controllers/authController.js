@@ -7,11 +7,15 @@ exports.logout_post = exports.getMyUser_get = exports.signup_post = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const validator_1 = __importDefault(require("validator"));
 const Users_1 = __importDefault(require("../models/Users"));
+const password_validator_1 = require("../utils/password-validator");
 const signup_post = async (req, res) => {
     try {
         const { full_name, email, password } = req.body;
         if (!full_name || !email || !password) {
             return res.status(400).json({ message: "Please enter full name, email, and password" });
+        }
+        if (!(0, password_validator_1.isPasswordValid)(password)) {
+            return res.status(400).json({ message: "Password too weak. Password must contain uppercase, lowercase, numbers, symbol and at least 8 characters" });
         }
         if (!validator_1.default.isEmail(email)) {
             return res.status(400).json({ message: "Please enter a valid email address" });
