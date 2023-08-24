@@ -19,11 +19,7 @@ router.get("/file/:id", [userRequiresAuth], getFileData_get)
 router.get("/folders", [userRequiresAuth], getFolderList_get)
 router.post("/folders", [userRequiresAuth], addFolder_post)
 router.post("/upload", [userRequiresAuth, upload.single("file")], uploadFile_post)
-router.get(
-    "/download/:id",
-    [userRequiresAuth],
-    downloadFile_get,
-)
+router.get("/download/:id", [userRequiresAuth], downloadFile_get)
 router.delete("/delete/:id", [userRequiresAuth], deleteFile_delete)
 router.put("/flag/:id", [userRequiresAuth, userRequiresAdmin], flagFile_admin_put)
 

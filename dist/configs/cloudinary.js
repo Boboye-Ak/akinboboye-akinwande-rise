@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteCloudinaryFile = exports.uploadFile = void 0;
+exports.clearCloudinaryFolder = exports.deleteCloudinaryFile = exports.uploadFile = void 0;
 const cloudinary_1 = require("cloudinary");
+const CLOUDINARY_FOLDER_NAME = process.env.CLOUDINARY_FOLDER_NAME;
 cloudinary_1.v2.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
@@ -15,7 +16,7 @@ const uploadFile = async (file) => {
     try {
         let path = file.path;
         const uploadedFile = await cloudinary_1.v2.uploader.upload(path, {
-            folder: "rise-assessment",
+            folder: CLOUDINARY_FOLDER_NAME,
             resource_type: "auto",
         });
         console.log(uploadedFile);
@@ -48,6 +49,18 @@ const deleteCloudinaryFile = async (publicId, cloudinaryUrl) => {
     }
 };
 exports.deleteCloudinaryFile = deleteCloudinaryFile;
+const clearCloudinaryFolder = async (folderName) => {
+    try {
+        console.log(`trying to clear cloudinary folder ${folderName}`);
+        await cloudinary_1.v2.api.delete_resources_by_prefix(folderName);
+        console.log("cloudinary folder cleared");
+    }
+    catch (e) {
+        console.log(e);
+        console.log("Error clearing cloudinary folder");
+    }
+};
+exports.clearCloudinaryFolder = clearCloudinaryFolder;
 const templateForUploadedFileForMP3 = {
     asset_id: "08ab760803bba450e664c90a70c96f16",
     public_id: "rise-assessment/omkoo2kxmsh3rb0hogd0",

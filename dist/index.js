@@ -26,6 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Session = void 0;
 const dotenv_flow_1 = __importDefault(require("dotenv-flow"));
 dotenv_flow_1.default.config();
 const swagger_ui_express_1 = require("swagger-ui-express");
@@ -53,7 +54,7 @@ db_1.default.authenticate()
     console.log("error connecting to the database...");
 });
 // Create a session store
-const Session = db_1.default.define("session", {
+exports.Session = db_1.default.define("session", {
     sid: {
         type: sequelize_1.default.STRING,
         primaryKey: true,

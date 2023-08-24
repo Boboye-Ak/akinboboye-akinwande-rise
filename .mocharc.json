@@ -1,11 +1,17 @@
+//{
+//  "require": ["ts-node/register", "source-map-support/register"],
+//  "spec": "test/**/*.spec.ts",
+//  "recursive": true,
+//  "colors": true,
+//  "timeout": 5000,
+//  "ui": "bdd",
+//  "watch-files": ["src/**/*.ts", "test/**/*.ts"],
+//  "watch-ignore": ["node_modules"]
+//}
+
 {
-  "diff": true,
-  "extension": ["js", "cjs", "mjs"],
-  "package": "./package.json",
-  "reporter": "spec",
-  "slow": "75",
-  "timeout": "2000",
-  "ui": "bdd",
-  "watch-files": ["lib/**/*.js", "test/**/*.js"],
-  "watch-ignore": ["lib/vendor"]
+    " require": ["ts-node/register"], 
+    "spec": "test/**/*.js", 
+    "reporter": "spec", 
+    "timeout": 5000 
 }

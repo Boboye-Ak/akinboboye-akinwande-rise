@@ -15,10 +15,10 @@ const getFileList_get = async (req, res) => {
         const page = parseInt(req.query.page, 10) || 1; // Default to page 1
         const limit = parseInt(req.query.limit, 10) || 20; // Default to limit of 20 items per page
         const folder = req.query.folder;
-        const hideDeletedFiles = parseInt(req.query.hideDeletedFiles, 10);
+        const showDeletedFiles = parseInt(req.query.showDeletedFiles, 10) || 0;
         const queryObject = {};
         folder && currentUser.folders.includes(folder) ? (queryObject.folder = folder) : null;
-        hideDeletedFiles ? (queryObject.isUploaded = true) : null;
+        !showDeletedFiles ? (queryObject.isUploaded = true) : null;
         queryObject.uploader_id = currentUser.id;
         const files = await Files_1.default.findAll({
             where: queryObject,
@@ -105,12 +105,12 @@ const uploadFile_post = async (req, res) => {
         };
         folderName ? (newFileObject.folder_name = folderName) : null;
         const newFile = await Files_1.default.create(newFileObject);
-        console.log(newFile);
+        console.log(newFile.toJSON());
         if (!currentUser.folders.includes(folderName)) {
             currentUser.folders.push(folderName);
             await Users_1.default.update({ folders: currentUser.folders }, { where: { id: currentUser.id } });
         }
-        return res.status(200).json(newFile);
+        return res.status(200).json({ message: "New file uploaded successfully", ...newFile });
     }
     catch (err) {
         console.log(err);

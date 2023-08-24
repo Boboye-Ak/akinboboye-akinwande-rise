@@ -10,13 +10,13 @@ const User = db_1.default.define("user", {
         type: sequelize_1.DataTypes.STRING,
         validate: {
             isEmail: true,
-        },
+        }, unique: true
     },
     full_name: {
-        type: sequelize_1.DataTypes.STRING
+        type: sequelize_1.DataTypes.STRING,
     },
     password: {
-        type: sequelize_1.DataTypes.STRING
+        type: sequelize_1.DataTypes.STRING,
     },
     folders: {
         type: sequelize_1.DataTypes.ARRAY(sequelize_1.DataTypes.STRING),
@@ -24,7 +24,7 @@ const User = db_1.default.define("user", {
     },
     isAdmin: {
         type: sequelize_1.DataTypes.BOOLEAN,
-        defaultValue: false
-    }
+        defaultValue: false,
+    },
 });
 exports.default = User;

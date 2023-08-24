@@ -15,7 +15,11 @@ const signup_post = async (req, res) => {
             return res.status(400).json({ message: "Please enter full name, email, and password" });
         }
         if (!(0, password_validator_1.isPasswordValid)(password)) {
-            return res.status(400).json({ message: "Password too weak. Password must contain uppercase, lowercase, numbers, symbol and at least 8 characters" });
+            return res
+                .status(400)
+                .json({
+                message: "Password too weak. Password must contain uppercase, lowercase, numbers, symbol and at least 8 characters",
+            });
         }
         if (!validator_1.default.isEmail(email)) {
             return res.status(400).json({ message: "Please enter a valid email address" });
@@ -53,6 +57,7 @@ exports.signup_post = signup_post;
 const getMyUser_get = async (req, res) => {
     try {
         const user = req.currentUser;
+        console.log({ userModel: Users_1.default });
         return res.status(200).json({
             user_id: user.id,
             full_name: user.full_name,

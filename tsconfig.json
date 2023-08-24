@@ -6,9 +6,17 @@
       "rootDir": "./src",
       "strict": true,
       "esModuleInterop": true,
+      "moduleResolution": "node",
       "allowSyntheticDefaultImports": true,
       "resolveJsonModule": true,
+      
     },
-    "typeRoots": ["./global.d.ts", "./node_modules/@types"]
+    "typeRoots": ["./global.d.ts", "./node_modules/@types"],
+    "exclude": [
+        "node_modules",
+        "dist",
+        "test" // Add the pattern for your test folder
+      ],
+      
 }
   

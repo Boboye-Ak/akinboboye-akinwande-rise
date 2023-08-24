@@ -12,7 +12,6 @@ router.post("/signup", authController_1.signup_post);
 router.post("/login", (req, res, next) => {
     // #swagger.description = 'Endpoint for users to login'
     passport_1.default.authenticate("local", (err, user, info) => {
-        console.log(user);
         if (err)
             throw err;
         if (!user)
@@ -24,7 +23,6 @@ router.post("/login", (req, res, next) => {
             req.logIn(user, (err) => {
                 if (err)
                     throw err;
-                console.log(req.user);
                 res.status(200).json({ message: "Successfully Authenticated", status: 200 });
             });
         }

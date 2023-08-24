@@ -27,7 +27,7 @@ db.authenticate()
     })
 
 // Create a session store
-const Session = db.define("session", {
+export const Session = db.define("session", {
     sid: {
         type: Sequelize.STRING,
         primaryKey: true,

@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from "cloudinary"
 import { Request } from "express"
 import File from "../models/Files"
+const CLOUDINARY_FOLDER_NAME = process.env.CLOUDINARY_FOLDER_NAME
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -13,11 +14,11 @@ const getPublicId = (url: string): string => {
     //return url.split("/").pop()!.split(".")[0]
 }
 
-const uploadFile = async (file: Express.Multer.File) => {
+export const uploadFile = async (file: Express.Multer.File) => {
     try {
         let path = file.path
         const uploadedFile = await cloudinary.uploader.upload(path, {
-            folder: "rise-assessment",
+            folder: CLOUDINARY_FOLDER_NAME,
             resource_type: "auto",
         })
         console.log(uploadedFile)
@@ -30,7 +31,7 @@ const uploadFile = async (file: Express.Multer.File) => {
     }
 }
 
-const deleteCloudinaryFile = async (publicId: string, cloudinaryUrl: string) => {
+export const deleteCloudinaryFile = async (publicId: string, cloudinaryUrl: string) => {
     try {
         console.log({ publicId })
         const splitUrl = cloudinaryUrl.split("/")
@@ -49,7 +50,16 @@ const deleteCloudinaryFile = async (publicId: string, cloudinaryUrl: string) => 
     }
 }
 
-export { uploadFile, deleteCloudinaryFile }
+export const clearCloudinaryFolder = async (folderName: string) => {
+    try {
+        console.log(`trying to clear cloudinary folder ${folderName}`)
+        await cloudinary.api.delete_resources_by_prefix(folderName)
+        console.log("cloudinary folder cleared")
+    } catch (e) {
+        console.log(e)
+        console.log("Error clearing cloudinary folder")
+    }
+}
 
 const templateForUploadedFileForMP3 = {
     asset_id: "08ab760803bba450e664c90a70c96f16",

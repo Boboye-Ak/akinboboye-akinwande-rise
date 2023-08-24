@@ -11,10 +11,10 @@ export const getFileList_get = async (req: Request, res: Response) => {
         const page: number = parseInt(req.query.page as string, 10) || 1 // Default to page 1
         const limit: number = parseInt(req.query.limit as string, 10) || 20 // Default to limit of 20 items per page
         const folder = req.query.folder
-        const hideDeletedFiles: number = parseInt(req.query.hideDeletedFiles as string, 10)
+        const showDeletedFiles: number = parseInt(req.query.showDeletedFiles as string, 10) || 0
         const queryObject: any = {}
         folder && currentUser.folders.includes(folder) ? (queryObject.folder = folder) : null
-        hideDeletedFiles ? (queryObject.isUploaded = true) : null
+        !showDeletedFiles ? (queryObject.isUploaded = true) : null
         queryObject.uploader_id = currentUser.id
         const files = await File.findAll({
             where: queryObject,
@@ -97,12 +97,12 @@ export const uploadFile_post = async (req: Request, res: Response) => {
         }
         folderName ? (newFileObject.folder_name = folderName) : null
         const newFile = await File.create(newFileObject)
-        console.log(newFile)
+        console.log(newFile.toJSON())
         if (!currentUser.folders.includes(folderName)) {
             currentUser.folders.push(folderName)
             await User.update({ folders: currentUser.folders }, { where: { id: currentUser.id } })
         }
-        return res.status(200).json(newFile)
+        return res.status(200).json({ message: "New file uploaded successfully", ...newFile })
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: "server error" })
@@ -174,7 +174,10 @@ export const flagFile_admin_put = async (req: Request, res: Response) => {
         }
         if (fileToBeFlagged.flaggers.length >= 2) {
             await deleteCloudinaryFile(fileToBeFlagged.public_id, fileToBeFlagged.cloudinary_url)
-            await File.update({ isFlagged: true, isUploaded:false }, { where: { id: fileToBeFlagged.id } })
+            await File.update(
+                { isFlagged: true, isUploaded: false },
+                { where: { id: fileToBeFlagged.id } },
+            )
         }
         fileToBeFlagged = await File.findOne({
             where: { id: fileId },
