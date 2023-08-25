@@ -31,9 +31,7 @@ const bcrypt = __importStar(require("bcrypt"));
 const passport_local_1 = require("passport-local");
 const Users_1 = __importDefault(require("../models/Users"));
 const localStrategy = new passport_local_1.Strategy({ usernameField: "email", passwordField: "password" }, async (username, password, done) => {
-    console.log("trying to login");
     try {
-        console.log("trying local strategy");
         const user = await Users_1.default.findOne({ where: { email: username } });
         if (!user)
             return done(null, false);

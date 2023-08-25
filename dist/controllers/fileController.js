@@ -105,12 +105,13 @@ const uploadFile_post = async (req, res) => {
         };
         folderName ? (newFileObject.folder_name = folderName) : null;
         const newFile = await Files_1.default.create(newFileObject);
-        console.log(newFile.toJSON());
         if (!currentUser.folders.includes(folderName)) {
             currentUser.folders.push(folderName);
             await Users_1.default.update({ folders: currentUser.folders }, { where: { id: currentUser.id } });
         }
-        return res.status(200).json({ message: "New file uploaded successfully", ...newFile });
+        return res
+            .status(200)
+            .json({ message: "New file uploaded successfully", ...newFile.toJSON() });
     }
     catch (err) {
         console.log(err);

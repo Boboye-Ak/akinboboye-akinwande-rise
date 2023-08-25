@@ -19,7 +19,6 @@ const uploadFile = async (file) => {
             folder: CLOUDINARY_FOLDER_NAME,
             resource_type: "auto",
         });
-        console.log(uploadedFile);
         const fileUrl = uploadedFile.secure_url;
         const publicId = uploadedFile.public_id;
         return { fileUrl, publicId };
@@ -32,7 +31,6 @@ const uploadFile = async (file) => {
 exports.uploadFile = uploadFile;
 const deleteCloudinaryFile = async (publicId, cloudinaryUrl) => {
     try {
-        console.log({ publicId });
         const splitUrl = cloudinaryUrl.split("/");
         const resourceType = splitUrl[splitUrl.indexOf("upload") - 1];
         const fileExtension = cloudinaryUrl.split(".").pop();

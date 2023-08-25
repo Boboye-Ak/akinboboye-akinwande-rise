@@ -3,16 +3,10 @@ import User from "../models/Users"
 
 export const userRequiresAuth = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        console.log(
-            req.isAuthenticated()
-                ? `user ${req.user} is authenticated`
-                : "User is not authenticated",
-        )
         if (!req.isAuthenticated()) {
             return res.status(401).json({ message: "Authentication is needed" })
         } else {
             const userId = req.user
-            console.log(userId)
             const user = await User.findByPk(userId as number)
             if (!user) {
                 return res

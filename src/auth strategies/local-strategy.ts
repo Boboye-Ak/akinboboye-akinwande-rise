@@ -5,9 +5,7 @@ import User from "../models/Users"
 const localStrategy = new LocalStrategy(
     { usernameField: "email", passwordField: "password" },
     async (username: string, password: string, done) => {
-        console.log("trying to login")
         try {
-            console.log("trying local strategy")
             const user: any = await User.findOne({ where: { email: username } })
             if (!user) return done(null, false)
             const auth = await bcrypt.compare(password, user.password)

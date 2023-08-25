@@ -7,15 +7,11 @@ exports.userRequiresAdmin = exports.userRequiresAuth = void 0;
 const Users_1 = __importDefault(require("../models/Users"));
 const userRequiresAuth = async (req, res, next) => {
     try {
-        console.log(req.isAuthenticated()
-            ? `user ${req.user} is authenticated`
-            : "User is not authenticated");
         if (!req.isAuthenticated()) {
             return res.status(401).json({ message: "Authentication is needed" });
         }
         else {
             const userId = req.user;
-            console.log(userId);
             const user = await Users_1.default.findByPk(userId);
             if (!user) {
                 return res

@@ -88,11 +88,9 @@ app.use(passport_1.default.initialize());
 app.use(passport_1.default.session());
 // Serialize and deserialize users
 passport_1.default.serializeUser(async (user, done) => {
-    console.log("serializing user");
     return done(null, user.id);
 });
 passport_1.default.deserializeUser(async (id, done) => {
-    console.log("deserializing user");
     return done(null, id);
 });
 // Configure Passport with local strategy

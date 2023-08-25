@@ -71,12 +71,10 @@ app.use(passport.session())
 
 // Serialize and deserialize users
 passport.serializeUser(async (user: any, done) => {
-    console.log("serializing user")
     return done(null, user.id)
 })
 
 passport.deserializeUser(async (id: number, done) => {
-    console.log("deserializing user")
     return done(null, id)
 })
 
