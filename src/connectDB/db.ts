@@ -1,7 +1,7 @@
 import { Sequelize } from "sequelize"
 
-const db = new Sequelize(
-    `postgres://${process.env.DB_USER}:${process.env.DB_PASS}@localhost/${process.env.DB_NAME}`,
-{logging:false})
+const DB_URL: string = process.env.DB_URL!
+
+const db = new Sequelize(DB_URL, { logging: false })
 
 export default db
