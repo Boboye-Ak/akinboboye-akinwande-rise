@@ -3,6 +3,7 @@ const { uploadFile, deleteCloudinaryFile } = require("../configs/cloudinary")
 import File from "../models/Files"
 import User from "../models/Users"
 import axios from "axios"
+import { getResourceType } from "../configs/cloudinary"
 
 export const getFileList_get = async (req: Request, res: Response) => {
     // #swagger.description = 'Endpoint to get list of file data'
@@ -31,16 +32,7 @@ export const getFileList_get = async (req: Request, res: Response) => {
 export const getFileData_get = async (req: Request, res: Response) => {
     // #swagger.description = 'Endpoint to get data for a single file'
     try {
-        const { id: fileId } = req.params
-        const currentUser = req.currentUser
-        const file: any = await File.findOne({ where: { id: fileId } })
-        if (!file) {
-            return res.status(404).json({ message: "File not found." })
-        }
-        if (file.uploader_id != currentUser.id && !currentUser.isAdmin) {
-            return res.status(401).json({ message: "Unauthorized! Sign in as admin or file owner" })
-        }
-        return res.status(200).json(file)
+        return res.status(200).json(req.gottenFile)
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: "server error" })
@@ -113,22 +105,22 @@ export const uploadFile_post = async (req: Request, res: Response) => {
 export const downloadFile_get = async (req: Request, res: Response) => {
     // #swagger.description = 'Endpoint to download a single file'
     try {
-        const currentUser = req.currentUser
-        const { id: fileId } = req.params
-        const file: any = await File.findByPk(fileId)
-        if (!file) {
-            return res.status(404).json({ message: "File not found" })
-        }
-        if (file.uploader_id != currentUser.id && !currentUser.isAdmin) {
-            return res
-                .status(401)
-                .json({ message: "Unauthorized! Only file owner and admin can download" })
-        }
+        const file = req.gottenFile
         const response = await axios.get(file.cloudinary_url, { responseType: "arraybuffer" })
         const contentType = "application/octet-stream"
         res.setHeader("Content-Disposition", `attachment; filename="${file.file_name}"`)
         res.setHeader("Content-Type", contentType)
         res.send(response.data)
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json({ message: "server error" })
+    }
+}
+
+export const streamFile_get = async (req: Request, res: Response) => {
+    try {
+        const file = req.gottenFile
+        res.redirect(file.cloudinary_url)
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: "server error" })
@@ -141,10 +133,10 @@ export const deleteFile_delete = async (req: Request, res: Response) => {
         const currentUser = req.currentUser
         const fileToBeDeleted: any = await File.findOne({ where: { isUploaded: true, id: fileId } })
         if (!fileToBeDeleted) {
-            return res.status(404).json({ message: "File not found" })
+            return res.status(404).json({ message: "File not found." })
         }
-        if (fileToBeDeleted.uploader_id != currentUser.id && !currentUser.isAdmin) {
-            return res.status(401).json({ message: "Only file owner and admin can delete a file" })
+        if (fileToBeDeleted.uploader_id != currentUser.id) {
+            return res.status(401).json({ message: "Unauthorized! Sign in as file owner" })
         }
         await deleteCloudinaryFile(fileToBeDeleted.public_id, fileToBeDeleted.cloudinary_url)
         fileToBeDeleted.isUploaded = false

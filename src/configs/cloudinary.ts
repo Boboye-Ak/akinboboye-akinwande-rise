@@ -30,12 +30,16 @@ export const uploadFile = async (file: Express.Multer.File) => {
     }
 }
 
+export const getResourceType = (cloudinaryUrl: string): string => {
+    const splitUrl = cloudinaryUrl.split("/")
+    const resourceType = splitUrl[splitUrl.indexOf("upload") - 1]
+    return resourceType
+}
+
 export const deleteCloudinaryFile = async (publicId: string, cloudinaryUrl: string) => {
     try {
-        const splitUrl = cloudinaryUrl.split("/")
-        const resourceType = splitUrl[splitUrl.indexOf("upload") - 1]
+        const resourceType = getResourceType(cloudinaryUrl)
         const fileExtension = cloudinaryUrl.split(".").pop()!
-
         const stringForDeleting = publicId.concat(".").concat(fileExtension)
         await cloudinary.uploader.destroy(publicId, {
             resource_type: resourceType,

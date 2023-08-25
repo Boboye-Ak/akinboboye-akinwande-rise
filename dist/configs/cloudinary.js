@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.clearCloudinaryFolder = exports.deleteCloudinaryFile = exports.uploadFile = void 0;
+exports.clearCloudinaryFolder = exports.deleteCloudinaryFile = exports.getResourceType = exports.uploadFile = void 0;
 const cloudinary_1 = require("cloudinary");
 const CLOUDINARY_FOLDER_NAME = process.env.CLOUDINARY_FOLDER_NAME;
 cloudinary_1.v2.config({
@@ -29,10 +29,15 @@ const uploadFile = async (file) => {
     }
 };
 exports.uploadFile = uploadFile;
+const getResourceType = (cloudinaryUrl) => {
+    const splitUrl = cloudinaryUrl.split("/");
+    const resourceType = splitUrl[splitUrl.indexOf("upload") - 1];
+    return resourceType;
+};
+exports.getResourceType = getResourceType;
 const deleteCloudinaryFile = async (publicId, cloudinaryUrl) => {
     try {
-        const splitUrl = cloudinaryUrl.split("/");
-        const resourceType = splitUrl[splitUrl.indexOf("upload") - 1];
+        const resourceType = (0, exports.getResourceType)(cloudinaryUrl);
         const fileExtension = cloudinaryUrl.split(".").pop();
         const stringForDeleting = publicId.concat(".").concat(fileExtension);
         await cloudinary_1.v2.uploader.destroy(publicId, {

@@ -5,7 +5,8 @@ import { Request } from "express"
 declare global {
     namespace Express {
         interface Request {
-            currentUser?: any // Add your custom property here
+            currentUser?: any,
+            gottenFile?: any 
         }
     }
 }

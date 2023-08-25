@@ -99,7 +99,7 @@ passport_1.default.use(local_strategy_1.localStrategy);
 app.use("/auth", authRouter_1.default);
 app.use("/files", fileRouter_1.default);
 // Test endpoint
-app.get("/", (req, res) => {
+app.get("/test", (req, res) => {
     // #swagger.description = 'Endpoint to test the server'
     res.status(200).json({ hello: "hello" });
 });

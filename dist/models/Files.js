@@ -7,13 +7,13 @@ const sequelize_1 = require("sequelize");
 const db_1 = __importDefault(require("../connectDB/db"));
 const File = db_1.default.define("file", {
     uploader_id: {
-        type: sequelize_1.DataTypes.NUMBER,
+        type: sequelize_1.DataTypes.INTEGER,
     },
     file_name: {
         type: sequelize_1.DataTypes.STRING,
     },
     file_size: {
-        type: sequelize_1.DataTypes.NUMBER,
+        type: sequelize_1.DataTypes.INTEGER,
     },
     folder_name: {
         type: sequelize_1.DataTypes.STRING,
@@ -33,8 +33,10 @@ const File = db_1.default.define("file", {
         defaultValue: false,
     },
     flaggers: {
-        type: sequelize_1.DataTypes.ARRAY(sequelize_1.DataTypes.NUMBER),
+        type: sequelize_1.DataTypes.ARRAY(sequelize_1.DataTypes.INTEGER),
         defaultValue: [],
     },
+}, {
+    timestamps: true,
 });
 exports.default = File;

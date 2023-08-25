@@ -12,5 +12,7 @@ const Session = db_1.default.define("session", {
     },
     expires: sequelize_1.DataTypes.DATE,
     data: sequelize_1.DataTypes.TEXT,
+}, {
+    timestamps: true,
 });
 exports.default = Session;

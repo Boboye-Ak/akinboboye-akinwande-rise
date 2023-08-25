@@ -86,7 +86,7 @@ app.use("/auth", authRouter)
 app.use("/files", fileRouter)
 
 // Test endpoint
-app.get("/", (req: Request, res: Response) => {
+app.get("/test", (req: Request, res: Response) => {
     // #swagger.description = 'Endpoint to test the server'
     res.status(200).json({ hello: "hello" })
 })

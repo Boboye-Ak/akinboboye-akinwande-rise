@@ -58,22 +58,18 @@ Create a `.env` file in the project root and add the following variables:
 
 ```plaintext
 PORT=5000
-DB_PORT=5432
-DB_USER="username"
-DB_PASS="password"
-DB_NAME="db_name"
+DB_URL="db-url"
 USER_SESSION_SECRET="user-session-secret"
-CLOUDINARY_CLOUD_NAME="cloudinary-cloud-name"
+CLOUDINARY_CLOUD_NAME="dc55ir792"
 CLOUDINARY_API_KEY="cloudinary-api-key"
 CLOUDINARY_API_SECRET="cloudinary-api-secret"
-   ```
+CLOUDINARY_FOLDER_NAME="cloudinary-folder-name"
+ ```
 Create a `.env.test` file in the project root and add the following variables(the environment variables that will be used to run tests):
 
 ```plaintext
-DB_PORT=5432
-DB_USER="username"
-DB_PASS="password"
-DB_NAME="db_name"
+DB_URL="db-url"
+CLOUDINARY_FOLDER_NAME="cloudinary-folder-name"
  ```
 
 4. **Start the server:**
@@ -101,10 +97,22 @@ DB_NAME="db_name"
 
 ## API Endpoints
 
-- **GET /test**: Test the api
-- **POST /auth/signup**: Register a new user
-- **POST /api/login**: Authenticate and generate JWT token
-- **GET /api/dashboard**: Get user dashboard data (protected route)
+- **GET /test**: Test the api to see if it's online
+- **POST /auth/signup**: Register and login a new user
+- **POST /auth/login**: Authenticate and get user session
+- **GET /auth/myuser**: Get user data of logged in user(protected route)
+- **POST /auth/logout**: Revoke current session and logout.
+
+- **GET /files**: Get file list(protected route)
+- **GET /files/file/:id**: Get file list(protected route)
+- **GET /files/folders**: Get user folder list(proteced route)
+- **POST /files/folders**: Create new folder(protected route)
+- **POST /files/upload**: Upload new file(protected route)
+- **GET /files/download/:id**: download file(protected route)
+- **GET /files/stream/:id**: stream audio/video file(protected route)
+- **DELETE /files/delete/:id**: Delete file from storage(protected route)
+- **PUT /files/flag/:id**: flag a file as unsafe(protected route and requires admin privileges)
+
 - **GET /doc/**: Get api swagger documentation
 
 See swagger documentation at ``

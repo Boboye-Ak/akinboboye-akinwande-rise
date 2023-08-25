@@ -171,7 +171,7 @@ describe("/files", () => {
                 .set("Cookie", sessionCookie)
                 .end((err, res) => {
                     res.should.have.status(404)
-                    expect(res.body.message).to.be.equal("File not found")
+                    expect(res.body.message).to.be.equal("File not found.")
                     done()
                 })
         })
@@ -181,7 +181,7 @@ describe("/files", () => {
                 .set("Cookie", intruderSessionCookie)
                 .end((err, res) => {
                     res.should.have.status(401)
-                    expect(res.body.message).to.be.equal("Only file owner and admin can delete a file")
+                    expect(res.body.message).to.be.equal("Unauthorized! Sign in as file owner")
                     done()
                 })
         })

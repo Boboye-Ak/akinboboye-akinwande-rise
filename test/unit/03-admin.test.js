@@ -90,6 +90,8 @@ describe("/admin", () => {
                 .set("Cookie", admin1sessionCookie)
                 .end((err, res) => {
                     res.should.have.status(200)
+                    expect(res.body.flaggedFile.isUploaded).to.be.equal(true)
+                    expect(res.body.flaggedFile.isFlagged).to.be.equal(false)
                     expect(res.body.message).to.be.equal("File Flagged Successfully")
                     done()
                 })

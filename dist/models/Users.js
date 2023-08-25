@@ -10,7 +10,8 @@ const User = db_1.default.define("user", {
         type: sequelize_1.DataTypes.STRING,
         validate: {
             isEmail: true,
-        }, unique: true
+        },
+        unique: true,
     },
     full_name: {
         type: sequelize_1.DataTypes.STRING,
@@ -26,5 +27,7 @@ const User = db_1.default.define("user", {
         type: sequelize_1.DataTypes.BOOLEAN,
         defaultValue: false,
     },
+}, {
+    timestamps: true,
 });
 exports.default = User;

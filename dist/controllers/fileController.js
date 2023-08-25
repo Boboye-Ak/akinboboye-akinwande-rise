@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.flagFile_admin_put = exports.deleteFile_delete = exports.downloadFile_get = exports.uploadFile_post = exports.addFolder_post = exports.getFolderList_get = exports.getFileData_get = exports.getFileList_get = void 0;
+exports.flagFile_admin_put = exports.deleteFile_delete = exports.streamFile_get = exports.downloadFile_get = exports.uploadFile_post = exports.addFolder_post = exports.getFolderList_get = exports.getFileData_get = exports.getFileList_get = void 0;
 const { uploadFile, deleteCloudinaryFile } = require("../configs/cloudinary");
 const Files_1 = __importDefault(require("../models/Files"));
 const Users_1 = __importDefault(require("../models/Users"));
@@ -36,16 +36,7 @@ exports.getFileList_get = getFileList_get;
 const getFileData_get = async (req, res) => {
     // #swagger.description = 'Endpoint to get data for a single file'
     try {
-        const { id: fileId } = req.params;
-        const currentUser = req.currentUser;
-        const file = await Files_1.default.findOne({ where: { id: fileId } });
-        if (!file) {
-            return res.status(404).json({ message: "File not found." });
-        }
-        if (file.uploader_id != currentUser.id && !currentUser.isAdmin) {
-            return res.status(401).json({ message: "Unauthorized! Sign in as admin or file owner" });
-        }
-        return res.status(200).json(file);
+        return res.status(200).json(req.gottenFile);
     }
     catch (err) {
         console.log(err);
@@ -122,17 +113,7 @@ exports.uploadFile_post = uploadFile_post;
 const downloadFile_get = async (req, res) => {
     // #swagger.description = 'Endpoint to download a single file'
     try {
-        const currentUser = req.currentUser;
-        const { id: fileId } = req.params;
-        const file = await Files_1.default.findByPk(fileId);
-        if (!file) {
-            return res.status(404).json({ message: "File not found" });
-        }
-        if (file.uploader_id != currentUser.id && !currentUser.isAdmin) {
-            return res
-                .status(401)
-                .json({ message: "Unauthorized! Only file owner and admin can download" });
-        }
+        const file = req.gottenFile;
         const response = await axios_1.default.get(file.cloudinary_url, { responseType: "arraybuffer" });
         const contentType = "application/octet-stream";
         res.setHeader("Content-Disposition", `attachment; filename="${file.file_name}"`);
@@ -145,16 +126,27 @@ const downloadFile_get = async (req, res) => {
     }
 };
 exports.downloadFile_get = downloadFile_get;
+const streamFile_get = async (req, res) => {
+    try {
+        const file = req.gottenFile;
+        res.redirect(file.cloudinary_url);
+    }
+    catch (err) {
+        console.log(err);
+        return res.status(500).json({ message: "server error" });
+    }
+};
+exports.streamFile_get = streamFile_get;
 const deleteFile_delete = async (req, res) => {
     try {
         const { id: fileId } = req.params;
         const currentUser = req.currentUser;
         const fileToBeDeleted = await Files_1.default.findOne({ where: { isUploaded: true, id: fileId } });
         if (!fileToBeDeleted) {
-            return res.status(404).json({ message: "File not found" });
+            return res.status(404).json({ message: "File not found." });
         }
-        if (fileToBeDeleted.uploader_id != currentUser.id && !currentUser.isAdmin) {
-            return res.status(401).json({ message: "Only file owner and admin can delete a file" });
+        if (fileToBeDeleted.uploader_id != currentUser.id) {
+            return res.status(401).json({ message: "Unauthorized! Sign in as file owner" });
         }
         await deleteCloudinaryFile(fileToBeDeleted.public_id, fileToBeDeleted.cloudinary_url);
         fileToBeDeleted.isUploaded = false;
