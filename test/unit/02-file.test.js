@@ -1,7 +1,7 @@
 process.env.NODE_ENV = "test"
 //const dotenvFlow = require("dotenv-flow")
 //dotenvFlow.config({ path: ".env.test" })
-const { credentials, testFileName, folderName } = require("../credentials")
+const { credentials, testFileName, folderName, testMediaFileName, mediaFolderName } = require("../credentials")
 const User = require("../../dist/models/Users").default
 const Session = require("../../dist/models/Sessions").default
 const File = require("../../dist/models/Files").default
@@ -18,10 +18,10 @@ const should = chai.should()
 chai.use(chaiHttp)
 
 
-let sessionCookie, fileId, intruderSessionCookie
+let sessionCookie, fileId, mediaFileId, intruderSessionCookie
 
 
-
+const mediaFilePath = path.join(__dirname, testMediaFileName)
 
 
 const testFilePath = path.join(__dirname, testFileName);
@@ -193,6 +193,38 @@ describe("/files", () => {
                     res.should.have.status(200)
                     expect(res.body.message).to.be.equal("File Deleted Successfully")
                     done()
+                })
+        })
+    })
+
+    describe("/stream", () => {
+        it("responds with 400 if file is not a media file", (done) => {
+            chai.request(app)
+                .get(`/files/stream/${fileId}`)
+                .set("Cookie", sessionCookie)
+                .end((err, res) => {
+                    res.should.have.status(400)
+                    expect(res.body.message).to.be.equal("Streaming only allowed for video and audio files")
+                    done()
+                })
+        })
+        it("responds redirects to video file if all goes well", (done) => {
+            chai.request(app)
+                .post("/files/upload")
+                .set("Content-Type", formData.getHeaders()["content-type"])
+                .attach("file", fs.readFileSync(mediaFilePath), testMediaFileName)
+                .field("folderName", mediaFolderName)
+                .set("Cookie", sessionCookie)
+                .end((err, res) => {
+                    mediaFileId = res.body.id
+                    chai.request(app)
+                        .get(`/files/stream/${mediaFileId}`)
+                        .set("Cookie", sessionCookie)
+                        .end((err, res) => {
+                            res.should.have.status(200)
+                            expect(res).to.redirect;
+                            done()
+                        })
                 })
         })
 

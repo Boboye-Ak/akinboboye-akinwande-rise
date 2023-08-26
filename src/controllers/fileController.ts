@@ -120,7 +120,7 @@ export const downloadFile_get = async (req: Request, res: Response) => {
 export const streamFile_get = async (req: Request, res: Response) => {
     try {
         const file = req.gottenFile
-        res.redirect(file.cloudinary_url)
+        res.status(200).redirect(file.cloudinary_url)
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: "server error" })

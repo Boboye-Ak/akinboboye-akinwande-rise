@@ -129,7 +129,7 @@ exports.downloadFile_get = downloadFile_get;
 const streamFile_get = async (req, res) => {
     try {
         const file = req.gottenFile;
-        res.redirect(file.cloudinary_url);
+        res.status(200).redirect(file.cloudinary_url);
     }
     catch (err) {
         console.log(err);

@@ -12,7 +12,7 @@ import {
 } from "../controllers/fileController"
 import { userRequiresAuth, userRequiresAdmin } from "../middleware/authMiddleware"
 import { upload } from "../configs/multer"
-import { getsFile, videoAndAudioOnly } from "../middleware/fileMiddleware"
+import { getsFile, mediaCompressor, videoAndAudioOnly } from "../middleware/fileMiddleware"
 
 const router = express.Router()
 
@@ -21,8 +21,12 @@ router.get("/file/:id", [userRequiresAuth, getsFile], getFileData_get)
 router.get("/folders", [userRequiresAuth], getFolderList_get)
 router.post("/folders", [userRequiresAuth], addFolder_post)
 router.post("/upload", [userRequiresAuth, upload.single("file")], uploadFile_post)
-router.get("/download/:id", [userRequiresAuth, getsFile], downloadFile_get)
-router.get("/stream/:id", [userRequiresAuth, getsFile, videoAndAudioOnly], streamFile_get)
+router.get("/download/:id", [userRequiresAuth, getsFile, mediaCompressor], downloadFile_get)
+router.get(
+    "/stream/:id",
+    [userRequiresAuth, getsFile, videoAndAudioOnly, mediaCompressor],
+    streamFile_get,
+)
 router.delete("/delete/:id", [userRequiresAuth], deleteFile_delete)
 router.put("/flag/:id", [userRequiresAuth, userRequiresAdmin], flagFile_admin_put)
 
