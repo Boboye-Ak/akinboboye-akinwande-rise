@@ -16,7 +16,7 @@ const getPublicId = (url: string): string => {
 
 export const uploadFile = async (file: Express.Multer.File) => {
     try {
-        let path = file.path
+        const path = file.path
         const uploadedFile = await cloudinary.uploader.upload(path, {
             folder: CLOUDINARY_FOLDER_NAME,
             resource_type: "auto",

@@ -38,4 +38,4 @@ module.exports.credentials = {
 module.exports.testFileName = "test_file.txt"
 module.exports.folderName = "my docs"
 module.exports.testMediaFileName = "test_video_file.mp4"
-module.exports.mediaFolderName="my videos"
+module.exports.mediaFolderName = "my videos"

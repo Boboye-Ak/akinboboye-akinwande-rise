@@ -51,7 +51,6 @@ export const mediaCompressor = (req: Request, res: Response, next: NextFunction)
         }
         console.log("now to generate url")
         const newCloudinaryURL = compressURL(req.gottenFile.cloudinary_url, quality)
-        console.log(newCloudinaryURL)
         req.gottenFile.cloudinary_url = newCloudinaryURL
         next()
     } catch (e) {

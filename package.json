@@ -7,7 +7,10 @@
         "dev": "cross-env NODE_ENV=development nodemon ./dist/index.js",
         "test": "cross-env NODE_ENV=test nyc mocha --require dotenv-flow/config --exit",
         "start": "node ./dist/index.js",
-        "swagger-autogen": "node swagger.js"
+        "swagger-autogen": "node swagger.js",
+        "docker-build": "docker build -t akinboboye-akinwande-rise-assessment",
+        "docker-run": "docker run -p 5000:5000 -d akinboboye-akinwande-rise-assessment",
+        "docker-stop":"docker stop akinboboye-akinwande-rise-assessment"
     },
     "author": "",
     "license": "ISC",

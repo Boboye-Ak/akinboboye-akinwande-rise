@@ -14,6 +14,7 @@ This repository contains a RESTful API built using Node.js(Typescript), Postgres
 - Admins can mark pictures and videos as unsafe.
 - Unsafe files automatically get deleted(If two or more admins flag a file, it receives the flag mark and is automatically deleted from the storage.)
 - Revokable session management(Sessions are revoked when the logout endpoint is called and user has to login again. Sessions are stored in the database instead of on the server so restarting the server doesn't invalidate user sessions on already logged in clients.)
+- File Compression: Users can select the percentage of the original quality of video, audio or image they want to download/stream
 - Multiple admin reviews before file is deleted (2 admin need to mark a file as unsafe(flag) before it is automatically deleted.)
 - File History: Records of deleted files remain on the database and information about them can be seen if you set the showDeletedFiles query parameter in the get files endpoint to a non-zero integer(eg 1). You can also see deleted file data by calling the file id to the get file data endpoint.
 
@@ -84,6 +85,9 @@ CLOUDINARY_FOLDER_NAME="cloudinary-folder-name"
    npm run dev #for development mode
    ```
 
+   ```bash
+   npm run docker-run #to run the docker container
+   ```
 
     ```bash
    npm run test #to run mocha tests. To be able to use tests you need to have Postgres running locally on your PC on port 5432
