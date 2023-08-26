@@ -227,6 +227,18 @@ describe("/files", () => {
                         })
                 })
         })
-
+    })
+    describe("/download", () => {
+        it("responds by downloading a file", (done) => {
+            chai.request(app)
+                .get(`/files/download/${mediaFileId}`)
+                .set("Cookie", sessionCookie)
+                .end((err, res) => {
+                    expect(res).to.have.status(200)
+                    expect(res.header["content-disposition"]).to.include("attachment")
+                    expect(res).to.have.header("content-type", "application/octet-stream");
+                    done()
+                })
+        })
     })
 })

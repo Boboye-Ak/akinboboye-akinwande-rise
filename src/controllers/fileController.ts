@@ -4,6 +4,7 @@ import File from "../models/Files"
 import User from "../models/Users"
 import axios from "axios"
 import { getResourceType } from "../configs/cloudinary"
+import { createReadStream } from "fs"
 
 export const getFileList_get = async (req: Request, res: Response) => {
     // #swagger.description = 'Endpoint to get list of file data'
@@ -110,7 +111,7 @@ export const downloadFile_get = async (req: Request, res: Response) => {
         const contentType = "application/octet-stream"
         res.setHeader("Content-Disposition", `attachment; filename="${file.file_name}"`)
         res.setHeader("Content-Type", contentType)
-        res.send(response.data)
+        res.status(200).send(response.data)
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: "server error" })
@@ -120,7 +121,7 @@ export const downloadFile_get = async (req: Request, res: Response) => {
 export const streamFile_get = async (req: Request, res: Response) => {
     try {
         const file = req.gottenFile
-        res.status(200).redirect(file.cloudinary_url)
+        return res.status(200).redirect(file.cloudinary_url)
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: "server error" })

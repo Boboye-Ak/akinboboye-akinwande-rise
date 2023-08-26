@@ -10,8 +10,7 @@ const chai = require("chai")
 const app = require("../../dist/index").default
 const chaiHttp = require("chai-http")
 const { clearCloudinaryFolder } = require("../../dist/configs/cloudinary")
-const {credentials} = require("../credentials")
-
+const { credentials } = require("../credentials")
 const expect = chai.expect
 const should = chai.should()
 chai.use(chaiHttp)
@@ -23,6 +22,7 @@ const clearDB = async () => {
     await clearCloudinaryFolder(process.env.CLOUDINARY_FOLDER_NAME)
 }
 
+let sessionCookie
 before(async () => {
     console.log("Clearing DB before process")
     try {
@@ -134,7 +134,7 @@ describe("/auth", () => {
                 .post("/auth/login")
                 .send(credentials.admin1Credentials)
                 .end((err, res) => {
-                    const sessionCookie = res.headers["set-cookie"][0].split(";")[0]
+                    sessionCookie = res.headers["set-cookie"][0].split(";")[0]
                     chai.request(app)
                         .get("/auth/myuser")
                         .set("Cookie", sessionCookie)
@@ -144,5 +144,23 @@ describe("/auth", () => {
                         })
                 })
         })
+    })
+    describe("/logout", () => {
+        it("Revokes the user's session", (done) => {
+            chai.request(app)
+                .post("/auth/logout")
+                .set("Cookie", sessionCookie)
+                .end((err, res) => {
+                    chai.request(app)
+                        .get("/auth/myuser")
+                        .set("Cookie", sessionCookie)
+                        .end((err, res)=>{
+                            res.should.have.status(401)
+                            done()
+                        })
+                })
+
+        })
+
     })
 })

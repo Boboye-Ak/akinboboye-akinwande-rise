@@ -118,7 +118,7 @@ const downloadFile_get = async (req, res) => {
         const contentType = "application/octet-stream";
         res.setHeader("Content-Disposition", `attachment; filename="${file.file_name}"`);
         res.setHeader("Content-Type", contentType);
-        res.send(response.data);
+        res.status(200).send(response.data);
     }
     catch (err) {
         console.log(err);
@@ -129,7 +129,7 @@ exports.downloadFile_get = downloadFile_get;
 const streamFile_get = async (req, res) => {
     try {
         const file = req.gottenFile;
-        res.status(200).redirect(file.cloudinary_url);
+        return res.status(200).redirect(file.cloudinary_url);
     }
     catch (err) {
         console.log(err);
