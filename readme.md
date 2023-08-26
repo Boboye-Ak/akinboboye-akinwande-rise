@@ -10,11 +10,12 @@ This repository contains a RESTful API built using Node.js(Typescript), Postgres
 - Users can upload files up to 200mb
 - Users can download uploaded files
 - Users can create folders to hold files
-- An admin user type for managing the content uploaded
-- Admins can mark pictures and videos as unsafe
-- Unsafe files automatically get deleted(If two or more admins flag a file, it receives the flag mark and is automatically deleted)
-- Revokable session management
-- Multiple admin reviews before file is deleted (2 admin reviews are needed)
+- An admin user type for managing the content uploaded(Users with the "isAdmin" column as `true` and are admins. They can access other users' files and mark files as unsafe).
+- Admins can mark pictures and videos as unsafe.
+- Unsafe files automatically get deleted(If two or more admins flag a file, it receives the flag mark and is automatically deleted from the storage.)
+- Revokable session management(Sessions are revoked when the logout endpoint is called and user has to login again. Sessions are stored in the database instead of on the server so restarting the server doesn't invalidate user sessions on already logged in clients.)
+- Multiple admin reviews before file is deleted (2 admin need to mark a file as unsafe(flag) before it is automatically deleted.)
+- File History: Records of deleted files remain on the database and information about them can be seen if you set the showDeletedFiles query parameter in the get files endpoint to a non-zero integer(eg 1). You can also see deleted file data by calling the file id to the get file data endpoint.
 
 
 ## Features
@@ -35,6 +36,7 @@ This repository contains a RESTful API built using Node.js(Typescript), Postgres
 ## Prerequisites
 
 - Node.js: [Download and Install Node.js](https://nodejs.org/)
+- Typescript
 - Postgres
 
 ## Getting Started
@@ -82,9 +84,6 @@ CLOUDINARY_FOLDER_NAME="cloudinary-folder-name"
    npm run dev #for development mode
    ```
 
-   ```bash
-   npm run swagger-autogen #to update the documentation if you make changes
-   ```
 
     ```bash
    npm run test #to run mocha tests. To be able to use tests you need to have Postgres running locally on your PC on port 5432
@@ -113,9 +112,7 @@ CLOUDINARY_FOLDER_NAME="cloudinary-folder-name"
 - **DELETE /files/delete/:id**: Delete file from storage(protected route)
 - **PUT /files/flag/:id**: flag a file as unsafe(protected route and requires admin privileges)
 
-- **GET /doc/**: Get api swagger documentation
 
-See swagger documentation at ``
 
 ## Authentication
 

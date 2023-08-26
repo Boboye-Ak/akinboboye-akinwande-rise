@@ -3,33 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logout_post = exports.getMyUser_get = exports.signup_post = void 0;
-const bcrypt_1 = __importDefault(require("bcrypt"));
-const validator_1 = __importDefault(require("validator"));
+exports.logout_post = exports.getMyUser_get = exports.login_post = exports.signup_post = void 0;
+const passport_1 = __importDefault(require("passport"));
 const Users_1 = __importDefault(require("../models/Users"));
-const password_validator_1 = require("../utils/password-validator");
 const signup_post = async (req, res) => {
     try {
-        const { full_name, email, password } = req.body;
-        if (!full_name || !email || !password) {
-            return res.status(400).json({ message: "Please enter full name, email, and password" });
-        }
-        if (!(0, password_validator_1.isPasswordValid)(password)) {
-            return res
-                .status(400)
-                .json({
-                message: "Password too weak. Password must contain uppercase, lowercase, numbers, symbol and at least 8 characters",
-            });
-        }
-        if (!validator_1.default.isEmail(email)) {
-            return res.status(400).json({ message: "Please enter a valid email address" });
-        }
-        const existingUserWithEmail = await Users_1.default.findOne({ where: { email: email } });
-        if (existingUserWithEmail) {
-            return res.status(409).json({ message: "User with this email already exists" });
-        }
-        const salt = await bcrypt_1.default.genSalt();
-        const hashedPassword = await bcrypt_1.default.hash(password, salt);
+        const hashedPassword = req.hashedPassword;
+        const { email, full_name } = req.body;
         const newUser = await Users_1.default.create({
             email: email,
             full_name: full_name,
@@ -54,10 +34,29 @@ const signup_post = async (req, res) => {
     }
 };
 exports.signup_post = signup_post;
+const login_post = (req, res, next) => {
+    // #swagger.description = 'Endpoint for users to login'
+    passport_1.default.authenticate("local", (err, user, info) => {
+        if (err)
+            throw err;
+        if (!user)
+            res.status(404).json({
+                message: "Could not login. Check email address and password",
+                status: 404,
+            });
+        else {
+            req.logIn(user, (err) => {
+                if (err)
+                    throw err;
+                res.status(200).json({ message: "Successfully Authenticated", status: 200 });
+            });
+        }
+    })(req, res, next);
+};
+exports.login_post = login_post;
 const getMyUser_get = async (req, res) => {
     try {
         const user = req.currentUser;
-        console.log({ userModel: Users_1.default });
         return res.status(200).json({
             user_id: user.id,
             full_name: user.full_name,

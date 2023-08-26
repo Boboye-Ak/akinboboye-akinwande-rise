@@ -1,32 +1,14 @@
-import { Request, Response } from "express"
+import { Request, Response, NextFunction } from "express"
 import bcrypt from "bcrypt"
 import validator from "validator"
+import passport from "passport"
 import User from "../models/Users"
 import { isPasswordValid } from "../utils/password-validator"
 
 export const signup_post = async (req: Request, res: Response) => {
     try {
-        const { full_name, email, password } = req.body
-        if (!full_name || !email || !password) {
-            return res.status(400).json({ message: "Please enter full name, email, and password" })
-        }
-        if (!isPasswordValid(password)) {
-            return res
-                .status(400)
-                .json({
-                    message:
-                        "Password too weak. Password must contain uppercase, lowercase, numbers, symbol and at least 8 characters",
-                })
-        }
-        if (!validator.isEmail(email)) {
-            return res.status(400).json({ message: "Please enter a valid email address" })
-        }
-        const existingUserWithEmail = await User.findOne({ where: { email: email } })
-        if (existingUserWithEmail) {
-            return res.status(409).json({ message: "User with this email already exists" })
-        }
-        const salt: string = await bcrypt.genSalt()
-        const hashedPassword: string = await bcrypt.hash(password, salt)
+        const hashedPassword = req.hashedPassword
+        const { email, full_name } = req.body
         const newUser: any = await User.create({
             email: email,
             full_name: full_name,
@@ -49,10 +31,27 @@ export const signup_post = async (req: Request, res: Response) => {
     }
 }
 
+export const login_post = (req: Request, res: Response, next: NextFunction) => {
+    // #swagger.description = 'Endpoint for users to login'
+    passport.authenticate("local", (err: Error, user: any, info: any) => {
+        if (err) throw err
+        if (!user)
+            res.status(404).json({
+                message: "Could not login. Check email address and password",
+                status: 404,
+            })
+        else {
+            req.logIn(user, (err) => {
+                if (err) throw err
+                res.status(200).json({ message: "Successfully Authenticated", status: 200 })
+            })
+        }
+    })(req, res, next)
+}
+
 export const getMyUser_get = async (req: Request, res: Response) => {
     try {
         const user: any = req.currentUser
-        console.log({ userModel: User })
         return res.status(200).json({
             user_id: user.id,
             full_name: user.full_name,
