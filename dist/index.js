@@ -96,8 +96,8 @@ passport_1.default.deserializeUser(async (id, done) => {
 // Configure Passport with local strategy
 passport_1.default.use(local_strategy_1.localStrategy);
 // Routing
-app.use("/auth", authRouter_1.default);
-app.use("/files", fileRouter_1.default);
+app.use("/api/auth", authRouter_1.default);
+app.use("/api/files", fileRouter_1.default);
 // Test endpoint
 app.get("/test", (req, res) => {
     // #swagger.description = 'Endpoint to test the server'

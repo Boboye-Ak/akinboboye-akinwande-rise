@@ -1,10 +1,12 @@
 import { Request, Response } from "express"
+import archiver from "archiver"
 const { uploadFile, deleteCloudinaryFile } = require("../configs/cloudinary")
 import File from "../models/Files"
 import User from "../models/Users"
 import axios from "axios"
-import { getResourceType } from "../configs/cloudinary"
+import { getResourceType, removeFileExtension } from "../configs/cloudinary"
 import { createReadStream } from "fs"
+import fs from "fs"
 
 export const getFileList_get = async (req: Request, res: Response) => {
     // #swagger.description = 'Endpoint to get list of file data'
@@ -112,6 +114,24 @@ export const downloadFile_get = async (req: Request, res: Response) => {
         res.setHeader("Content-Disposition", `attachment; filename="${file.file_name}"`)
         res.setHeader("Content-Type", contentType)
         res.status(200).send(response.data)
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json({ message: "server error" })
+    }
+}
+
+export const downloadCompressedFile_get = async (req: Request, res: Response) => {
+    try {
+        const file = req.gottenFile
+        const response = await axios.get(file.cloudinary_url, { responseType: "arraybuffer" })
+        //const contentType = "application/octet-stream"
+        const plainFileName = removeFileExtension(file.file_name)
+        const zipFileName = `${plainFileName}.zip`
+        const archive = archiver("zip", { zlib: { level: 9 } })
+        archive.append(response.data, { name: file.file_name })
+        res.attachment(zipFileName)
+        archive.pipe(res)
+        archive.finalize()
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: "server error" })

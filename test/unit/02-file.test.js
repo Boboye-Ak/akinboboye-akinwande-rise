@@ -29,16 +29,16 @@ const formData = new FormData();
 
 
 
-describe("/files", () => {
+describe("/api/files", () => {
     before((done) => {
         console.log("login users")
         chai.request(app)
-            .post("/auth/login")
+            .post("/api/auth/login")
             .send(credentials.admin1Credentials)
             .end((err, res) => {
                 sessionCookie = res.headers["set-cookie"][0].split(";")[0]
                 chai.request(app)
-                    .post("/auth/signup")
+                    .post("/api/auth/signup")
                     .send(credentials.intruderCredentials)
                     .end((err, res) => {
                         intruderSessionCookie = res.headers["set-cookie"][0].split(";")[0]
@@ -47,10 +47,10 @@ describe("/files", () => {
             })
     })
 
-    describe("/upload", () => {
+    describe("/api/upload POST", () => {
         it("responds with 400 if no file is uploaded", (done) => {
             chai.request(app)
-                .post("/files/upload")
+                .post("/api/files/upload")
                 .set("Cookie", sessionCookie)
                 .end((err, res) => {
                     res.should.have.status(400)
@@ -60,7 +60,7 @@ describe("/files", () => {
         })
         it("responds with 200 if file is uploaded successfully", (done) => {
             chai.request(app)
-                .post("/files/upload")
+                .post("/api/files/upload")
                 .set("Content-Type", formData.getHeaders()["content-type"])
                 .attach("file", fs.readFileSync(testFilePath), testFileName)
                 .field("folderName", folderName)
@@ -73,9 +73,10 @@ describe("/files", () => {
                 })
         })
     })
-    describe("/ get file list", () => {
+    describe("/api/files GET", () => {
         it("responds with an array of files", (done) => {
-            chai.request(app).get("/files")
+            chai.request(app)
+                .get("/api/files")
                 .set("Cookie", sessionCookie)
                 .end((err, res) => {
                     res.should.have.status(200)
@@ -84,9 +85,10 @@ describe("/files", () => {
                 })
         })
     })
-    describe("/ get file data", () => {
+    describe("/api/files/file/:id GET", () => {
         it("responds with 401 if intruder tries to access file", (done) => {
-            chai.request(app).get(`/files/file/${fileId}`)
+            chai.request(app)
+                .get(`/api/files/file/${fileId}`)
                 .set("Cookie", intruderSessionCookie)
                 .end((err, res) => {
                     res.should.have.status(401)
@@ -96,7 +98,8 @@ describe("/files", () => {
         })
         it("responds with 404 if file is not found", (done) => {
             const invalidFileId = 9999
-            chai.request(app).get(`/files/file/${invalidFileId}`)
+            chai.request(app)
+                .get(`/api/files/file/${invalidFileId}`)
                 .set("Cookie", sessionCookie)
                 .end((err, res) => {
                     res.should.have.status(404)
@@ -105,7 +108,8 @@ describe("/files", () => {
                 })
         })
         it("responds with a file object", (done) => {
-            chai.request(app).get(`/files/file/${fileId}`)
+            chai.request(app)
+                .get(`/api/files/file/${fileId}`)
                 .set("Cookie", sessionCookie)
                 .end((err, res) => {
                     res.should.have.status(200)
@@ -115,10 +119,10 @@ describe("/files", () => {
                 })
         })
     })
-    describe("/folders get folder list", () => {
+    describe("/api/files/folders GET", () => {
         it("responds with an array", (done) => {
             chai.request(app)
-                .get("/files/folders")
+                .get("/api/files/folders")
                 .set("Cookie", sessionCookie).end((err, res) => {
                     res.should.have.status(200)
                     expect(res.body).to.be.an("array")
@@ -127,10 +131,10 @@ describe("/files", () => {
                 })
         })
     })
-    describe("/folders add new folder", () => {
+    describe("/api/files/folders POST", () => {
         it("responds with 400 if no folder name is passed", (done) => {
             chai.request(app)
-                .post("/files/folders")
+                .post("/api/files/folders")
                 .set("Cookie", sessionCookie)
                 .end((err, res) => {
                     res.should.have.status(400)
@@ -141,7 +145,7 @@ describe("/files", () => {
         it("responds with 409 if folder name already exists", (done) => {
             const newFolderName = "new folder"
             chai.request(app)
-                .post("/files/folders")
+                .post("/api/files/folders")
                 .send({ folderName })
                 .set("Cookie", sessionCookie)
                 .end((err, res) => {
@@ -153,7 +157,7 @@ describe("/files", () => {
         it("responds with 200 if everything is fine", (done) => {
             const newFolderName = "new folder"
             chai.request(app)
-                .post("/files/folders")
+                .post("/api/files/folders")
                 .send({ folderName: newFolderName })
                 .set("Cookie", sessionCookie)
                 .end((err, res) => {
@@ -163,11 +167,11 @@ describe("/files", () => {
                 })
         })
     })
-    describe("delete file", () => {
+    describe("/api/files/delete/:id DELETE", () => {
         it("responds with 404 if the file does not exist", (done) => {
             const nonExistentFileId = 9999
             chai.request(app)
-                .delete(`/files/delete/${nonExistentFileId}`)
+                .delete(`/api/files/delete/${nonExistentFileId}`)
                 .set("Cookie", sessionCookie)
                 .end((err, res) => {
                     res.should.have.status(404)
@@ -177,7 +181,7 @@ describe("/files", () => {
         })
         it("responds with 401 if intruder tries to delete file", (done) => {
             chai.request(app)
-                .delete(`/files/delete/${fileId}`)
+                .delete(`/api/files/delete/${fileId}`)
                 .set("Cookie", intruderSessionCookie)
                 .end((err, res) => {
                     res.should.have.status(401)
@@ -187,7 +191,7 @@ describe("/files", () => {
         })
         it("responds with 200 if everything goes fine", (done) => {
             chai.request(app)
-                .delete(`/files/delete/${fileId}`)
+                .delete(`/api/files/delete/${fileId}`)
                 .set("Cookie", sessionCookie)
                 .end((err, res) => {
                     res.should.have.status(200)
@@ -197,10 +201,10 @@ describe("/files", () => {
         })
     })
 
-    describe("/stream", () => {
+    describe("api/files/stream/:id GET", () => {
         it("responds with 400 if file is not a media file", (done) => {
             chai.request(app)
-                .get(`/files/stream/${fileId}`)
+                .get(`/api/files/stream/${fileId}`)
                 .set("Cookie", sessionCookie)
                 .end((err, res) => {
                     res.should.have.status(400)
@@ -210,7 +214,7 @@ describe("/files", () => {
         })
         it("responds redirects to video file if all goes well", (done) => {
             chai.request(app)
-                .post("/files/upload")
+                .post("/api/files/upload")
                 .set("Content-Type", formData.getHeaders()["content-type"])
                 .attach("file", fs.readFileSync(mediaFilePath), testMediaFileName)
                 .field("folderName", mediaFolderName)
@@ -218,7 +222,7 @@ describe("/files", () => {
                 .end((err, res) => {
                     mediaFileId = res.body.id
                     chai.request(app)
-                        .get(`/files/stream/${mediaFileId}`)
+                        .get(`/api/files/stream/${mediaFileId}`)
                         .set("Cookie", sessionCookie)
                         .end((err, res) => {
                             res.should.have.status(200)
@@ -228,15 +232,28 @@ describe("/files", () => {
                 })
         })
     })
-    describe("/download", () => {
+    describe("/api/files/download/:id GET", () => {
         it("responds by downloading a file", (done) => {
             chai.request(app)
-                .get(`/files/download/${mediaFileId}`)
+                .get(`/api/files/download/${mediaFileId}`)
                 .set("Cookie", sessionCookie)
                 .end((err, res) => {
                     expect(res).to.have.status(200)
                     expect(res.header["content-disposition"]).to.include("attachment")
                     expect(res).to.have.header("content-type", "application/octet-stream");
+                    done()
+                })
+        })
+    })
+    describe("/api/files/downloadcompressed/:id GET", () => {
+        it("responds by downloading a zip file", (done) => {
+            chai.request(app)
+                .get(`/api/files/downloadcompressed/${mediaFileId}`)
+                .set("Cookie", sessionCookie)
+                .end((err, res) => {
+                    expect(res).to.have.status(200)
+                    expect(res.header["content-disposition"]).to.include("attachment")
+                    expect(res).to.have.header("content-type", "application/zip");
                     done()
                 })
         })

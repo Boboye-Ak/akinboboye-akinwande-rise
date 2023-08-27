@@ -1,9 +1,17 @@
 import { Request, Response, NextFunction } from "express"
 import File from "../models/Files"
 import { compressURL, getResourceType } from "../configs/cloudinary"
+
+export const getFileExtension = (fileName: string): string => {
+    const lastDotIndex = fileName.lastIndexOf(".")
+    if (lastDotIndex === -1) {
+        return "" // No extension found
+    }
+    return fileName.slice(lastDotIndex + 1)
+}
+
 export const getsFile = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        console.log("getting file")
         const { id: fileId } = req.params
         const currentUser = req.currentUser
         const file: any = await File.findOne({ where: { id: fileId } })
@@ -14,7 +22,6 @@ export const getsFile = async (req: Request, res: Response, next: NextFunction) 
             return res.status(401).json({ message: "Unauthorized! Sign in as admin or file owner" })
         }
         req.gottenFile = file
-        console.log("gotten file")
         next()
     } catch (e) {
         console.log(e)
@@ -31,7 +38,6 @@ export const videoAndAudioOnly = (req: Request, res: Response, next: NextFunctio
                 .status(400)
                 .json({ message: "Streaming only allowed for video and audio files" })
         }
-        console.log("it is valid media")
         next()
     } catch (e) {
         console.log(e)
@@ -41,15 +47,25 @@ export const videoAndAudioOnly = (req: Request, res: Response, next: NextFunctio
 
 export const mediaCompressor = (req: Request, res: Response, next: NextFunction) => {
     try {
-        const file=req.gottenFile
+        const file = req.gottenFile
         const quality = parseInt(req.query.quality as string, 10) || 100
-        const allowedResourceTypes = ["video", "image", "audio"]
-        const resourceType = getResourceType(file.cloudinary_url)
-        if (!allowedResourceTypes.includes(resourceType)) {
-            console.log("no compression for this file type")
+        const allowedExtensionTypes = [
+            "jpg",
+            "jpeg",
+            "png",
+            "gif",
+            "mp4",
+            "avi",
+            "mkv",
+            "mov",
+            "mp3",
+            "wav",
+            "ogg",
+        ]
+        const fileExtension = getFileExtension(file.cloudinary_url)
+        if (!allowedExtensionTypes.includes(fileExtension)) {
             next()
         }
-        console.log("now to generate url")
         const newCloudinaryURL = compressURL(req.gottenFile.cloudinary_url, quality)
         req.gottenFile.cloudinary_url = newCloudinaryURL
         next()

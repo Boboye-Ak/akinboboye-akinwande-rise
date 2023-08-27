@@ -82,8 +82,8 @@ passport.deserializeUser(async (id: number, done) => {
 passport.use(localStrategy)
 
 // Routing
-app.use("/auth", authRouter)
-app.use("/files", fileRouter)
+app.use("/api/auth", authRouter)
+app.use("/api/files", fileRouter)
 
 // Test endpoint
 app.get("/test", (req: Request, res: Response) => {

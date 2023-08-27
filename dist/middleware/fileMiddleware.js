@@ -3,12 +3,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mediaCompressor = exports.videoAndAudioOnly = exports.getsFile = void 0;
+exports.mediaCompressor = exports.videoAndAudioOnly = exports.getsFile = exports.getFileExtension = void 0;
 const Files_1 = __importDefault(require("../models/Files"));
 const cloudinary_1 = require("../configs/cloudinary");
+const getFileExtension = (fileName) => {
+    const lastDotIndex = fileName.lastIndexOf(".");
+    if (lastDotIndex === -1) {
+        return ""; // No extension found
+    }
+    return fileName.slice(lastDotIndex + 1);
+};
+exports.getFileExtension = getFileExtension;
 const getsFile = async (req, res, next) => {
     try {
-        console.log("getting file");
         const { id: fileId } = req.params;
         const currentUser = req.currentUser;
         const file = await Files_1.default.findOne({ where: { id: fileId } });
@@ -19,7 +26,6 @@ const getsFile = async (req, res, next) => {
             return res.status(401).json({ message: "Unauthorized! Sign in as admin or file owner" });
         }
         req.gottenFile = file;
-        console.log("gotten file");
         next();
     }
     catch (e) {
@@ -37,7 +43,6 @@ const videoAndAudioOnly = (req, res, next) => {
                 .status(400)
                 .json({ message: "Streaming only allowed for video and audio files" });
         }
-        console.log("it is valid media");
         next();
     }
     catch (e) {
@@ -50,15 +55,24 @@ const mediaCompressor = (req, res, next) => {
     try {
         const file = req.gottenFile;
         const quality = parseInt(req.query.quality, 10) || 100;
-        const allowedResourceTypes = ["video", "image", "audio"];
-        const resourceType = (0, cloudinary_1.getResourceType)(file.cloudinary_url);
-        if (!allowedResourceTypes.includes(resourceType)) {
-            console.log("no compression for this file type");
+        const allowedExtensionTypes = [
+            "jpg",
+            "jpeg",
+            "png",
+            "gif",
+            "mp4",
+            "avi",
+            "mkv",
+            "mov",
+            "mp3",
+            "wav",
+            "ogg",
+        ];
+        const fileExtension = (0, exports.getFileExtension)(file.cloudinary_url);
+        if (!allowedExtensionTypes.includes(fileExtension)) {
             next();
         }
-        console.log("now to generate url");
         const newCloudinaryURL = (0, cloudinary_1.compressURL)(req.gottenFile.cloudinary_url, quality);
-        console.log(newCloudinaryURL);
         req.gottenFile.cloudinary_url = newCloudinaryURL;
         next();
     }

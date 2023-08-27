@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.compressURL = exports.clearCloudinaryFolder = exports.deleteCloudinaryFile = exports.getResourceType = exports.uploadFile = void 0;
+exports.removeFileExtension = exports.compressURL = exports.clearCloudinaryFolder = exports.deleteCloudinaryFile = exports.getResourceType = exports.uploadFile = void 0;
 const cloudinary_1 = require("cloudinary");
 const CLOUDINARY_FOLDER_NAME = process.env.CLOUDINARY_FOLDER_NAME;
 cloudinary_1.v2.config({
@@ -14,7 +14,7 @@ const getPublicId = (url) => {
 };
 const uploadFile = async (file) => {
     try {
-        let path = file.path;
+        const path = file.path;
         const uploadedFile = await cloudinary_1.v2.uploader.upload(path, {
             folder: CLOUDINARY_FOLDER_NAME,
             resource_type: "auto",
@@ -70,3 +70,11 @@ const compressURL = (url, percentageQuality) => {
     return urlArray.join("");
 };
 exports.compressURL = compressURL;
+const removeFileExtension = (filename) => {
+    const lastDotIndex = filename.lastIndexOf(".");
+    if (lastDotIndex === -1) {
+        return filename; // No extension found
+    }
+    return filename.substring(0, lastDotIndex);
+};
+exports.removeFileExtension = removeFileExtension;

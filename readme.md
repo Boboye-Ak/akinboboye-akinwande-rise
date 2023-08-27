@@ -14,7 +14,7 @@ This repository contains a RESTful API built using Node.js(Typescript), Postgres
 - Admins can mark pictures and videos as unsafe.
 - Unsafe files automatically get deleted(If two or more admins flag a file, it receives the flag mark and is automatically deleted from the storage.)
 - Revokable session management(Sessions are revoked when the logout endpoint is called and user has to login again. Sessions are stored in the database instead of on the server so restarting the server doesn't invalidate user sessions on already logged in clients.)
-- File Compression: Users can select the percentage of the original quality of video, audio or image they want to download/stream
+- File Compression: Users can use the downloadcompressed endpoint to download zip versions of their files. Users can select the percentage of the original quality of video, audio or image they want to download/stream as a request query parameter.
 - Multiple admin reviews before file is deleted (2 admin need to mark a file as unsafe(flag) before it is automatically deleted.)
 - File History: Records of deleted files remain on the database and information about them can be seen if you set the showDeletedFiles query parameter in the get files endpoint to a non-zero integer(eg 1). You can also see deleted file data by calling the file id to the get file data endpoint.
 
@@ -45,7 +45,7 @@ This repository contains a RESTful API built using Node.js(Typescript), Postgres
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/Boboye-Ak/akinboboye-akinwande-rise-assessment/
+   git clone https://github.com/Boboye-Ak/akinboboye-akinwande-rise/
    cd akinboboye-akinwande-rise-assessment
    ```
 
@@ -96,25 +96,26 @@ CLOUDINARY_FOLDER_NAME="cloudinary-folder-name"
 5. **Access the API:**
 
    The API should be accessible at `http://localhost:5000` if running on your local device.
-   It is also live remotely at ``.
+   It is also live remotely at `https//:akinboboye-akinwande-rise-production.up.railway.app`.
 
 ## API Endpoints
 
-- **GET /test**: Test the api to see if it's online
-- **POST /auth/signup**: Register and login a new user
-- **POST /auth/login**: Authenticate and get user session
-- **GET /auth/myuser**: Get user data of logged in user(protected route)
-- **POST /auth/logout**: Revoke current session and logout.
+- **GET /api/test**: Test the api to see if it's online
+- **POST /api/auth/signup**: Register and login a new user
+- **POST /api/auth/login**: Authenticate and get user session
+- **GET /api/auth/myuser**: Get user data of logged in user(protected route)
+- **POST /api/auth/logout**: Revoke current session and logout.
 
-- **GET /files**: Get file list(protected route)
-- **GET /files/file/:id**: Get file list(protected route)
-- **GET /files/folders**: Get user folder list(proteced route)
-- **POST /files/folders**: Create new folder(protected route)
-- **POST /files/upload**: Upload new file(protected route)
-- **GET /files/download/:id**: download file(protected route)
-- **GET /files/stream/:id**: stream audio/video file(protected route)
-- **DELETE /files/delete/:id**: Delete file from storage(protected route)
-- **PUT /files/flag/:id**: flag a file as unsafe(protected route and requires admin privileges)
+- **GET /api/files**: Get file list(protected route)
+- **GET /api/files/file/:id**: Get file list(protected route)
+- **GET /api/files/folders**: Get user folder list(proteced route)
+- **POST /api/files/folders**: Create new folder(protected route)
+- **POST /api/files/upload**: Upload new file(protected route)
+- **GET /api/files/download/:id**: download file(protected route)
+- **GET /api/files/downloadcompressed/:id**: download compressed file(protected route)
+- **GET /api/files/stream/:id**: stream audio/video file(protected route)
+- **DELETE /api/files/delete/:id**: Delete file from storage(protected route)
+- **PUT /api/files/flag/:id**: flag a file as unsafe(protected route and requires admin privileges)
 
 
 
@@ -132,7 +133,7 @@ The postman collection for this project is available at [Postman Collection](htt
 
 ## Appreciation
 
-I greatly appreciate this opportunity and look forward to hearing from you.
+I greatly appreciate this opportunity. Working on this project has been a pleasure and I really and look forward to hearing from you.
 
 ## License
 

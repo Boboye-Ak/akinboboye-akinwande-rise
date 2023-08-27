@@ -63,8 +63,16 @@ export const clearCloudinaryFolder = async (folderName: string) => {
     }
 }
 
-export const compressURL = (url: string, percentageQuality: number) => {
+export const compressURL = (url: string, percentageQuality: number):string => {
     const urlArray = url.split("upload/")
     urlArray.splice(1, 0, `upload/q_${percentageQuality}/`)
     return urlArray.join("")
+}
+
+export const removeFileExtension = (filename: string): string => {
+    const lastDotIndex = filename.lastIndexOf(".")
+    if (lastDotIndex === -1) {
+        return filename // No extension found
+    }
+    return filename.substring(0, lastDotIndex)
 }

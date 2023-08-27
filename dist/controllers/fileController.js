@@ -3,11 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.flagFile_admin_put = exports.deleteFile_delete = exports.streamFile_get = exports.downloadFile_get = exports.uploadFile_post = exports.addFolder_post = exports.getFolderList_get = exports.getFileData_get = exports.getFileList_get = void 0;
+exports.flagFile_admin_put = exports.deleteFile_delete = exports.streamFile_get = exports.downloadCompressedFile_get = exports.downloadFile_get = exports.uploadFile_post = exports.addFolder_post = exports.getFolderList_get = exports.getFileData_get = exports.getFileList_get = void 0;
+const archiver_1 = __importDefault(require("archiver"));
 const { uploadFile, deleteCloudinaryFile } = require("../configs/cloudinary");
 const Files_1 = __importDefault(require("../models/Files"));
 const Users_1 = __importDefault(require("../models/Users"));
 const axios_1 = __importDefault(require("axios"));
+const cloudinary_1 = require("../configs/cloudinary");
 const getFileList_get = async (req, res) => {
     // #swagger.description = 'Endpoint to get list of file data'
     try {
@@ -126,6 +128,25 @@ const downloadFile_get = async (req, res) => {
     }
 };
 exports.downloadFile_get = downloadFile_get;
+const downloadCompressedFile_get = async (req, res) => {
+    try {
+        const file = req.gottenFile;
+        const response = await axios_1.default.get(file.cloudinary_url, { responseType: "arraybuffer" });
+        //const contentType = "application/octet-stream"
+        const plainFileName = (0, cloudinary_1.removeFileExtension)(file.file_name);
+        const zipFileName = `${plainFileName}.zip`;
+        const archive = (0, archiver_1.default)("zip", { zlib: { level: 9 } });
+        archive.append(response.data, { name: file.file_name });
+        res.attachment(zipFileName);
+        archive.pipe(res);
+        archive.finalize();
+    }
+    catch (err) {
+        console.log(err);
+        return res.status(500).json({ message: "server error" });
+    }
+};
+exports.downloadCompressedFile_get = downloadCompressedFile_get;
 const streamFile_get = async (req, res) => {
     try {
         const file = req.gottenFile;

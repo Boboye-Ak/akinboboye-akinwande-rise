@@ -41,11 +41,11 @@ after(async () => {
     }
 })
 
-describe("/auth", () => {
-    describe("/signup", () => {
+describe("/api/auth", () => {
+    describe("/api/auth/signup POST", () => {
         it("responds with 400 if credentials are incomplete", (done) => {
             chai.request(app)
-                .post("/auth/signup")
+                .post("/api/auth/signup")
                 .send(credentials.admin1Credentials_incomplete)
                 .end((err, res) => {
                     res.should.have.status(400)
@@ -56,7 +56,7 @@ describe("/auth", () => {
         })
         it("responds with 400 if password is weak", (done) => {
             chai.request(app)
-                .post("/auth/signup")
+                .post("/api/auth/signup")
                 .send(credentials.admin1Credentials_weakPassword)
                 .end((err, res) => {
                     res.should.have.status(400)
@@ -67,7 +67,7 @@ describe("/auth", () => {
         })
         it("responds with 400 if email address is invalid", (done) => {
             chai.request(app)
-                .post("/auth/signup")
+                .post("/api/auth/signup")
                 .send(credentials.admin1Credentials_invalidEmail)
                 .end((err, res) => {
                     res.should.have.status(400)
@@ -77,7 +77,7 @@ describe("/auth", () => {
         })
         it("responds with 200 and creates new user if everything is fine", (done) => {
             chai.request(app)
-                .post("/auth/signup")
+                .post("/api/auth/signup")
                 .send(credentials.admin1Credentials)
                 .end((err, res) => {
                     res.should.have.status(200)
@@ -87,7 +87,7 @@ describe("/auth", () => {
         })
         it("responds with 409 if duplicate data is sent", (done) => {
             chai.request(app)
-                .post("/auth/signup")
+                .post("/api/auth/signup")
                 .send(credentials.admin1Credentials)
                 .end((err, res) => {
                     res.should.have.status(409)
@@ -96,10 +96,10 @@ describe("/auth", () => {
                 })
         })
     })
-    describe("/login", () => {
+    describe("api/auth/login POST", () => {
         it("should return 200 if email and password are correct", (done) => {
             chai.request(app)
-                .post("/auth/login")
+                .post("/api/auth/login")
                 .send(credentials.admin1Credentials)
                 .end((err, res) => {
                     res.should.have.status(200)
@@ -109,7 +109,7 @@ describe("/auth", () => {
         })
         it("should return 404 when email or password is wrong", (done) => {
             chai.request(app)
-                .post("/auth/login")
+                .post("/api/auth/login")
                 .send(credentials.admin1Credentials_wrongPassword)
                 .end((err, res) => {
                     res.should.have.status(404)
@@ -119,10 +119,10 @@ describe("/auth", () => {
         })
     })
 
-    describe("/myuser", () => {
+    describe("api/auth/myuser GET", () => {
         it("responds with 401 if user is not logged in", (done) => {
             chai.request(app)
-                .get("/auth/myuser")
+                .get("/api/auth/myuser")
                 .end((err, res) => {
                     res.should.have.status(401)
                     expect(res.body.message).to.be.equal("Authentication is needed")
@@ -131,12 +131,12 @@ describe("/auth", () => {
         })
         it("responds with 200 if user is logged in", (done) => {
             chai.request(app)
-                .post("/auth/login")
+                .post("/api/auth/login")
                 .send(credentials.admin1Credentials)
                 .end((err, res) => {
                     sessionCookie = res.headers["set-cookie"][0].split(";")[0]
                     chai.request(app)
-                        .get("/auth/myuser")
+                        .get("/api/auth/myuser")
                         .set("Cookie", sessionCookie)
                         .end((err, res) => {
                             res.should.have.status(200)
@@ -145,16 +145,16 @@ describe("/auth", () => {
                 })
         })
     })
-    describe("/logout", () => {
+    describe("/api/auth/logout POST", () => {
         it("Revokes the user's session", (done) => {
             chai.request(app)
-                .post("/auth/logout")
+                .post("/api/auth/logout")
                 .set("Cookie", sessionCookie)
                 .end((err, res) => {
                     chai.request(app)
-                        .get("/auth/myuser")
+                        .get("/api/auth/myuser")
                         .set("Cookie", sessionCookie)
-                        .end((err, res)=>{
+                        .end((err, res) => {
                             res.should.have.status(401)
                             done()
                         })

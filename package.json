@@ -10,11 +10,12 @@
         "swagger-autogen": "node swagger.js",
         "docker-build": "docker build -t akinboboye-akinwande-rise-assessment",
         "docker-run": "docker run -p 5000:5000 -d akinboboye-akinwande-rise-assessment",
-        "docker-stop":"docker stop akinboboye-akinwande-rise-assessment"
+        "docker-stop": "docker stop akinboboye-akinwande-rise-assessment"
     },
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "archiver": "^6.0.0",
         "axios": "^1.4.0",
         "bcrypt": "^5.1.1",
         "cloudinary": "^1.40.0",
@@ -40,6 +41,7 @@
         "validator": "^13.11.0"
     },
     "devDependencies": {
+        "@types/archiver": "^5.3.2",
         "@types/bcrypt": "^5.0.0",
         "@types/chai": "^4.3.5",
         "@types/chai-http": "^4.2.0",

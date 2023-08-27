@@ -9,6 +9,7 @@ import {
     deleteFile_delete,
     flagFile_admin_put,
     streamFile_get,
+    downloadCompressedFile_get,
 } from "../controllers/fileController"
 import { userRequiresAuth, userRequiresAdmin } from "../middleware/authMiddleware"
 import { upload } from "../configs/multer"
@@ -22,6 +23,7 @@ router.get("/folders", [userRequiresAuth], getFolderList_get)
 router.post("/folders", [userRequiresAuth], addFolder_post)
 router.post("/upload", [userRequiresAuth, upload.single("file")], uploadFile_post)
 router.get("/download/:id", [userRequiresAuth, getsFile, mediaCompressor], downloadFile_get)
+router.get("/downloadcompressed/:id", [userRequiresAuth, getsFile, mediaCompressor], downloadCompressedFile_get)
 router.get(
     "/stream/:id",
     [userRequiresAuth, getsFile, videoAndAudioOnly, mediaCompressor],

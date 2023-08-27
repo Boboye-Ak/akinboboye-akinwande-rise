@@ -15,6 +15,7 @@ router.get("/folders", [authMiddleware_1.userRequiresAuth], fileController_1.get
 router.post("/folders", [authMiddleware_1.userRequiresAuth], fileController_1.addFolder_post);
 router.post("/upload", [authMiddleware_1.userRequiresAuth, multer_1.upload.single("file")], fileController_1.uploadFile_post);
 router.get("/download/:id", [authMiddleware_1.userRequiresAuth, fileMiddleware_1.getsFile, fileMiddleware_1.mediaCompressor], fileController_1.downloadFile_get);
+router.get("/downloadcompressed/:id", [authMiddleware_1.userRequiresAuth, fileMiddleware_1.getsFile, fileMiddleware_1.mediaCompressor], fileController_1.downloadCompressedFile_get);
 router.get("/stream/:id", [authMiddleware_1.userRequiresAuth, fileMiddleware_1.getsFile, fileMiddleware_1.videoAndAudioOnly, fileMiddleware_1.mediaCompressor], fileController_1.streamFile_get);
 router.delete("/delete/:id", [authMiddleware_1.userRequiresAuth], fileController_1.deleteFile_delete);
 router.put("/flag/:id", [authMiddleware_1.userRequiresAuth, authMiddleware_1.userRequiresAdmin], fileController_1.flagFile_admin_put);

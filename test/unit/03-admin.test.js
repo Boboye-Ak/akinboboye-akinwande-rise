@@ -28,24 +28,24 @@ describe("/admin", () => {
         User.update({ isAdmin: true }, { where: { email: credentials.admin1Credentials.email } })
             .then(() => {
                 chai.request(app)
-                    .post("/auth/signup")
+                    .post("/api/auth/signup")
                     .send(credentials.admin2Credentials)
                     .end((err, res) => {
                         admin2sessionCookie = res.headers["set-cookie"][0].split(";")[0]
                         User.update({ isAdmin: true }, { where: { email: credentials.admin2Credentials.email } })
                             .then(() => {
                                 chai.request(app)
-                                    .post("/auth/login")
+                                    .post("/api/auth/login")
                                     .send(credentials.intruderCredentials)
                                     .end((err, res) => {
                                         intruderSessionCookie = res.headers["set-cookie"][0].split(";")[0]
                                         chai.request(app)
-                                            .post("/auth/login")
+                                            .post("/api/auth/login")
                                             .send(credentials.admin1Credentials)
                                             .end((err, res) => {
                                                 admin1sessionCookie = res.headers["set-cookie"][0].split(";")[0]
                                                 chai.request(app)
-                                                    .post("/files/upload")
+                                                    .post("/api/files/upload")
                                                     .set("Content-Type", formData.getHeaders()["content-type"])
                                                     .attach("file", fs.readFileSync(testFilePath), testFileName)
                                                     .field("folderName", folderName)
@@ -66,7 +66,7 @@ describe("/admin", () => {
         it("responds with 404 if file does not exist", (done) => {
             const invalidFileId = 9999
             chai.request(app)
-                .put(`/files/flag/${invalidFileId}`)
+                .put(`/api/files/flag/${invalidFileId}`)
                 .set("Cookie", admin1sessionCookie)
                 .end((err, res) => {
                     res.should.have.status(404)
@@ -76,7 +76,7 @@ describe("/admin", () => {
         })
         it("responds with 401 non admin tries to flag", (done) => {
             chai.request(app)
-                .put(`/files/flag/${fileId}`)
+                .put(`/api/files/flag/${fileId}`)
                 .set("Cookie", intruderSessionCookie)
                 .end((err, res) => {
                     res.should.have.status(401)
@@ -86,7 +86,7 @@ describe("/admin", () => {
         })
         it("responds with 200 if file is flagged successfully", (done) => {
             chai.request(app)
-                .put(`/files/flag/${fileId}`)
+                .put(`/api/files/flag/${fileId}`)
                 .set("Cookie", admin1sessionCookie)
                 .end((err, res) => {
                     res.should.have.status(200)
@@ -98,7 +98,7 @@ describe("/admin", () => {
         })
         it("deletes the file from the server if flagged by two different admins", (done) => {
             chai.request(app)
-                .put(`/files/flag/${fileId}`)
+                .put(`/api/files/flag/${fileId}`)
                 .set("Cookie", admin2sessionCookie)
                 .end((err, res) => {
                     res.should.have.status(200)
