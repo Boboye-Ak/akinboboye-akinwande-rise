@@ -7,6 +7,7 @@ import Sequelize from "sequelize"
 import SequelizeStore from "connect-session-sequelize"
 import cookieParser from "cookie-parser"
 import express, { Request, Response } from "express"
+const app = express()
 import cors from "cors"
 import { localStrategy } from "./auth strategies/local-strategy"
 import passport from "passport"
@@ -41,13 +42,12 @@ const sessionStore = new (SequelizeStore(session.Store))({
     table: "session",
 })
 
-const app = express()
+
 
 // Middleware
 app.use("/doc", serve, setup(swaggerFile))
 app.use(
     cors({
-        //origin: FRONTEND_URL, // Update with your frontend URL
         credentials: true,
     }),
 )
@@ -87,8 +87,7 @@ app.use("/api/files", fileRouter)
 
 // Test endpoint
 app.get("/test", (req: Request, res: Response) => {
-    // #swagger.description = 'Endpoint to test the server'
-    res.status(200).json({ hello: "hello" })
+    res.status(200).json({ message: "hello there", status:200, error:false })
 })
 
 app.listen(PORT, () => {

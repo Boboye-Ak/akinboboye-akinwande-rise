@@ -36,6 +36,7 @@ const sequelize_1 = __importDefault(require("sequelize"));
 const connect_session_sequelize_1 = __importDefault(require("connect-session-sequelize"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const express_1 = __importDefault(require("express"));
+const app = (0, express_1.default)();
 const cors_1 = __importDefault(require("cors"));
 const local_strategy_1 = require("./auth strategies/local-strategy");
 const passport_1 = __importDefault(require("passport"));
@@ -66,11 +67,9 @@ const sessionStore = new ((0, connect_session_sequelize_1.default)(express_sessi
     db: db_1.default,
     table: "session",
 });
-const app = (0, express_1.default)();
 // Middleware
 app.use("/doc", swagger_ui_express_1.serve, (0, swagger_ui_express_1.setup)(swaggerFile));
 app.use((0, cors_1.default)({
-    //origin: FRONTEND_URL, // Update with your frontend URL
     credentials: true,
 }));
 app.use(express_1.default.json());
@@ -100,8 +99,7 @@ app.use("/api/auth", authRouter_1.default);
 app.use("/api/files", fileRouter_1.default);
 // Test endpoint
 app.get("/test", (req, res) => {
-    // #swagger.description = 'Endpoint to test the server'
-    res.status(200).json({ hello: "hello" });
+    res.status(200).json({ message: "hello there", status: 200, error: false });
 });
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
