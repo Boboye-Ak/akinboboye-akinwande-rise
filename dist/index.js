@@ -98,8 +98,8 @@ passport_1.default.use(local_strategy_1.localStrategy);
 app.use("/api/auth", authRouter_1.default);
 app.use("/api/files", fileRouter_1.default);
 // Test endpoint
-app.get("/test", (req, res) => {
-    res.status(200).json({ message: "hello there", status: 200, error: false });
+app.get("/", (req, res) => {
+    res.status(200).json({ message: "Welcome to Akinboboye Akinwande's cloud storage", status: 200, error: false });
 });
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
