@@ -20,6 +20,8 @@ const signup_post = async (req, res) => {
                 throw err;
             return res.status(200).json({
                 message: "New User created successfully",
+                status: 200,
+                error: false,
                 user_id: newUser.id,
                 full_name: newUser.full_name,
                 email: newUser.email,
@@ -30,12 +32,11 @@ const signup_post = async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "server error" });
+        return res.status(500).json({ message: "server error", status: 500, error: true });
     }
 };
 exports.signup_post = signup_post;
 const login_post = (req, res, next) => {
-    // #swagger.description = 'Endpoint for users to login'
     passport_1.default.authenticate("local", (err, user, info) => {
         if (err)
             throw err;
@@ -43,12 +44,17 @@ const login_post = (req, res, next) => {
             res.status(404).json({
                 message: "Could not login. Check email address and password",
                 status: 404,
+                error: true,
             });
         else {
             req.logIn(user, (err) => {
                 if (err)
                     throw err;
-                res.status(200).json({ message: "Successfully Authenticated", status: 200 });
+                res.status(200).json({
+                    message: "Successfully Authenticated",
+                    status: 200,
+                    error: false,
+                });
             });
         }
     })(req, res, next);
@@ -58,6 +64,8 @@ const getMyUser_get = async (req, res) => {
     try {
         const user = req.currentUser;
         return res.status(200).json({
+            status: 200,
+            error: false,
             user_id: user.id,
             full_name: user.full_name,
             email: user.email,
@@ -67,7 +75,7 @@ const getMyUser_get = async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "Server Error" });
+        return res.status(500).json({ message: "Server Error", status: 500, error: true });
     }
 };
 exports.getMyUser_get = getMyUser_get;
@@ -78,13 +86,15 @@ const logout_post = async (req, res) => {
             req.session.destroy((err) => {
                 if (err)
                     throw err;
-                return res.status(200).json({ message: "Logged out successfully" });
+                return res
+                    .status(200)
+                    .json({ message: "Logged out successfully", status: 200, error: false });
             });
         }
     }
     catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "Server Error" });
+        return res.status(500).json({ message: "Server Error", status: 500, error: true });
     }
 };
 exports.logout_post = logout_post;

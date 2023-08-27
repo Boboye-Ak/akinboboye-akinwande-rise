@@ -1,6 +1,6 @@
-# Akinboboye Akinwande's submission for Tobmas Group Coding Assessment. A RESTful API with Node.js, MongoDB, and JWT Authentication
+# Akinboboye Akinwande's submission for Risevest Coding Assessment. A RESTful API with Node.js(Typescript), Postgres, Cloudinary for storage and Passport local-strategy Authentication
 
-This repository contains a RESTful API built using Node.js(Typescript), Postgres for data storage, and Passport local-strategy as well as express sessions for authentication to access protected user information and files. 
+This repository contains a RESTful API built using Node.js(Typescript), Postgres for data storage, and Passport local-strategy as well as express sessions for authentication to access protected user information and files. Users are able to use this API as a file storage for various file types. Tests are written in mocha.
 
 ## Tasks attempted
 - Users can create an account with:
@@ -31,8 +31,12 @@ This repository contains a RESTful API built using Node.js(Typescript), Postgres
 - Express.js for routing and middleware
 - Error handling and validation
 - Environmental configuration using `.env` file
-- API documentation using Swagger
+- Unit tests using mocha, chai and chai-http
+- File compression.
+- Media streaming
 - API documentation using Postman
+- Containerization using docker.
+- Hosted on railway. 
 
 ## Prerequisites
 
@@ -71,9 +75,11 @@ CLOUDINARY_FOLDER_NAME="cloudinary-folder-name"
 Create a `.env.test` file in the project root and add the following variables(the environment variables that will be used to run tests):
 
 ```plaintext
-DB_URL="db-url"
-CLOUDINARY_FOLDER_NAME="cloudinary-folder-name"
+DB_URL="test-db-url"
+CLOUDINARY_FOLDER_NAME="test-cloudinary-folder-name"
  ```
+
+ NB: You should create a folder in your cloudinary drive to host the files that are uploaded. also have a separate folder for files that will be uploaded during tests. Those will be your cloudinary folder names.
 
 4. **Start the server:**
 
@@ -101,21 +107,21 @@ CLOUDINARY_FOLDER_NAME="cloudinary-folder-name"
 ## API Endpoints
 
 - **GET /api/test**: Test the api to see if it's online
-- **POST /api/auth/signup**: Register and login a new user
-- **POST /api/auth/login**: Authenticate and get user session
+- **POST /api/auth/signup**: Register and login a new user. It takes email, full_name and password(must pass validation criteria in the request body.)
+- **POST /api/auth/login**: Authenticate and get user session. Takes email and password in the request body
 - **GET /api/auth/myuser**: Get user data of logged in user(protected route)
 - **POST /api/auth/logout**: Revoke current session and logout.
 
-- **GET /api/files**: Get file list(protected route)
-- **GET /api/files/file/:id**: Get file list(protected route)
-- **GET /api/files/folders**: Get user folder list(proteced route)
-- **POST /api/files/folders**: Create new folder(protected route)
-- **POST /api/files/upload**: Upload new file(protected route)
-- **GET /api/files/download/:id**: download file(protected route)
-- **GET /api/files/downloadcompressed/:id**: download compressed file(protected route)
-- **GET /api/files/stream/:id**: stream audio/video file(protected route)
+- **GET /api/files**: Get file list(protected route). It gets a list of files and their data.
+- **GET /api/files/file/:id**: Get file list(protected route). Gets data of a single file
+- **GET /api/files/folders**: Get user folder list(proteced route). Gets list of all the folders of the logged in user
+- **POST /api/files/folders**: Create new folder(protected route). Adds a new folder.
+- **POST /api/files/upload**: Upload new file(protected route).
+- **GET /api/files/download/:id**: download file(protected route). Download file.
+- **GET /api/files/downloadcompressed/:id**: download compressed file(protected route) in zip form.
+- **GET /api/files/stream/:id**: stream audio/video file(protected route). For user to stream media files in the browser.
 - **DELETE /api/files/delete/:id**: Delete file from storage(protected route)
-- **PUT /api/files/flag/:id**: flag a file as unsafe(protected route and requires admin privileges)
+- **PUT /api/files/flag/:id**: flag a file as unsafe(protected route and requires admin privileges). If two admins report a file as unsafe, it is officially flagged and automatically deleted from the cloud.
 
 
 
@@ -125,11 +131,11 @@ This API uses express-sessions and passport local-strategy. When you send a vali
 
 ## Error Handling
 
-Error handling is implemented for various scenarios, including validation errors, authentication errors, and server errors with appropriate status codes and informative messages.
+Error handling is implemented for various scenarios, including validation errors, authentication errors, and server errors with appropriate status codes and very detailed and informative messages.
 
 ## Postman Collection
 
-The postman collection for this project is available at [Postman Collection](https://www.postman.com/planetary-rocket-306155/workspace/public-workspace/collection/18499196-cb1ae28c-2ac2-4d92-bd98-6c232dc0f18f?action=share&creator=18499196&active-environment=18499196-94083831-2784-437f-bc2e-30266dd6e512) in the collection `Akinboboye-Akinwande-rise-assessment`
+The postman collection for this project is available at [Postman Collection](https://www.postman.com/planetary-rocket-306155/workspace/public-workspace/collection/18499196-cb1ae28c-2ac2-4d92-bd98-6c232dc0f18f?action=share&creator=18499196&active-environment=18499196-67765f16-4ab5-409b-b055-bd11e068e7a5) in the collection `Akinboboye-Akinwande-rise-assessment`
 
 ## Appreciation
 

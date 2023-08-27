@@ -11,11 +11,10 @@ const Users_1 = __importDefault(require("../models/Users"));
 const axios_1 = __importDefault(require("axios"));
 const cloudinary_1 = require("../configs/cloudinary");
 const getFileList_get = async (req, res) => {
-    // #swagger.description = 'Endpoint to get list of file data'
     try {
         const currentUser = req.currentUser;
-        const page = parseInt(req.query.page, 10) || 1; // Default to page 1
-        const limit = parseInt(req.query.limit, 10) || 20; // Default to limit of 20 items per page
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = parseInt(req.query.limit, 10) || 20;
         const folder = req.query.folder;
         const showDeletedFiles = parseInt(req.query.showDeletedFiles, 10) || 0;
         const queryObject = {};
@@ -31,18 +30,17 @@ const getFileList_get = async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "server error" });
+        return res.status(500).json({ message: "server error", status: 500, error: true });
     }
 };
 exports.getFileList_get = getFileList_get;
 const getFileData_get = async (req, res) => {
-    // #swagger.description = 'Endpoint to get data for a single file'
     try {
         return res.status(200).json(req.gottenFile);
     }
     catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "server error" });
+        return res.status(500).json({ message: "server error", status: 500, error: true });
     }
 };
 exports.getFileData_get = getFileData_get;
@@ -53,7 +51,7 @@ const getFolderList_get = async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "server error" });
+        return res.status(500).json({ message: "server error", status: 500, error: true });
     }
 };
 exports.getFolderList_get = getFolderList_get;
@@ -61,29 +59,40 @@ const addFolder_post = async (req, res) => {
     try {
         const { folderName } = req.body;
         if (!folderName) {
-            return res.status(400).json({ message: "Please enter folder name" });
+            return res
+                .status(400)
+                .json({ message: "Please enter folder name", status: 400, error: true });
         }
         const currentUser = req.currentUser;
         if (currentUser.folders.includes(folderName)) {
-            return res.status(409).json({ message: `Folder named "${folderName}" already exists` });
+            return res.status(409).json({
+                message: `Folder named "${folderName}" already exists`,
+                status: 409,
+                error: true,
+            });
         }
         currentUser.folders.push(folderName);
         await Users_1.default.update({ folders: currentUser.folders }, { where: { id: currentUser.id } });
-        return res.status(200).json({ message: `Folder "${folderName}" added successfully` });
+        return res.status(200).json({
+            message: `Folder "${folderName}" added successfully`,
+            status: 200,
+            error: false,
+        });
     }
     catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "server error" });
+        return res.status(500).json({ message: "server error", status: 500, error: true });
     }
 };
 exports.addFolder_post = addFolder_post;
 const uploadFile_post = async (req, res) => {
-    // #swagger.description = 'Endpoint to upload a file'
     try {
         const currentUser = req.currentUser;
         const { folderName } = req.body;
         if (!req.file) {
-            return res.status(400).json({ message: "Please upload file as form data" });
+            return res
+                .status(400)
+                .json({ message: "Please upload file as form data", status: 400, error: true });
         }
         const { size, originalname } = req.file;
         const { fileUrl, publicId } = await uploadFile(req.file);
@@ -102,18 +111,20 @@ const uploadFile_post = async (req, res) => {
             currentUser.folders.push(folderName);
             await Users_1.default.update({ folders: currentUser.folders }, { where: { id: currentUser.id } });
         }
-        return res
-            .status(200)
-            .json({ message: "New file uploaded successfully", ...newFile.toJSON() });
+        return res.status(200).json({
+            message: "New file uploaded successfully",
+            status: 200,
+            error: false,
+            ...newFile.toJSON(),
+        });
     }
     catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "server error" });
+        return res.status(500).json({ message: "server error", status: 500, error: true });
     }
 };
 exports.uploadFile_post = uploadFile_post;
 const downloadFile_get = async (req, res) => {
-    // #swagger.description = 'Endpoint to download a single file'
     try {
         const file = req.gottenFile;
         const response = await axios_1.default.get(file.cloudinary_url, { responseType: "arraybuffer" });
@@ -124,7 +135,7 @@ const downloadFile_get = async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "server error" });
+        return res.status(500).json({ message: "server error", status: 500, error: true });
     }
 };
 exports.downloadFile_get = downloadFile_get;
@@ -132,7 +143,6 @@ const downloadCompressedFile_get = async (req, res) => {
     try {
         const file = req.gottenFile;
         const response = await axios_1.default.get(file.cloudinary_url, { responseType: "arraybuffer" });
-        //const contentType = "application/octet-stream"
         const plainFileName = (0, cloudinary_1.removeFileExtension)(file.file_name);
         const zipFileName = `${plainFileName}.zip`;
         const archive = (0, archiver_1.default)("zip", { zlib: { level: 9 } });
@@ -143,7 +153,7 @@ const downloadCompressedFile_get = async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "server error" });
+        return res.status(500).json({ message: "server error", status: 500, error: true });
     }
 };
 exports.downloadCompressedFile_get = downloadCompressedFile_get;
@@ -154,7 +164,7 @@ const streamFile_get = async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "server error" });
+        return res.status(500).json({ message: "server error", status: 500, error: true });
     }
 };
 exports.streamFile_get = streamFile_get;
@@ -164,21 +174,26 @@ const deleteFile_delete = async (req, res) => {
         const currentUser = req.currentUser;
         const fileToBeDeleted = await Files_1.default.findOne({ where: { isUploaded: true, id: fileId } });
         if (!fileToBeDeleted) {
-            return res.status(404).json({ message: "File not found." });
+            return res.status(404).json({ message: "File not found.", status: 404, error: true });
         }
         if (fileToBeDeleted.uploader_id != currentUser.id) {
-            return res.status(401).json({ message: "Unauthorized! Sign in as file owner" });
+            return res
+                .status(401)
+                .json({ message: "Unauthorized! Sign in as file owner", status: 401, error: true });
         }
         await deleteCloudinaryFile(fileToBeDeleted.public_id, fileToBeDeleted.cloudinary_url);
         fileToBeDeleted.isUploaded = false;
         await fileToBeDeleted.save();
-        return res
-            .status(200)
-            .json({ message: "File Deleted Successfully", deletedFile: fileToBeDeleted });
+        return res.status(200).json({
+            message: "File Deleted Successfully",
+            status: 200,
+            error: false,
+            deletedFile: fileToBeDeleted,
+        });
     }
     catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "server error" });
+        return res.status(500).json({ message: "server error", status: 500, error: true });
     }
 };
 exports.deleteFile_delete = deleteFile_delete;
@@ -190,7 +205,7 @@ const flagFile_admin_put = async (req, res) => {
             where: { isUploaded: true, id: fileId, isFlagged: false },
         });
         if (!fileToBeFlagged) {
-            return res.status(404).json({ message: "File not found" });
+            return res.status(404).json({ message: "File not found", status: 404, error: true });
         }
         const flaggers = fileToBeFlagged.flaggers;
         if (!flaggers.includes(currentUser.id)) {
@@ -204,13 +219,16 @@ const flagFile_admin_put = async (req, res) => {
         fileToBeFlagged = await Files_1.default.findOne({
             where: { id: fileId },
         });
-        return res
-            .status(200)
-            .json({ message: "File Flagged Successfully", flaggedFile: fileToBeFlagged });
+        return res.status(200).json({
+            message: "File Flagged Successfully",
+            status: 200,
+            error: false,
+            flaggedFile: fileToBeFlagged,
+        });
     }
     catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "server error" });
+        return res.status(500).json({ message: "server error", status: 500, error: true });
     }
 };
 exports.flagFile_admin_put = flagFile_admin_put;

@@ -1,9 +1,6 @@
 import { Request, Response, NextFunction } from "express"
-import bcrypt from "bcrypt"
-import validator from "validator"
 import passport from "passport"
 import User from "../models/Users"
-import { isPasswordValid } from "../utils/password-validator"
 
 export const signup_post = async (req: Request, res: Response) => {
     try {
@@ -18,6 +15,8 @@ export const signup_post = async (req: Request, res: Response) => {
             if (err) throw err
             return res.status(200).json({
                 message: "New User created successfully",
+                status: 200,
+                error: false,
                 user_id: newUser.id,
                 full_name: newUser.full_name,
                 email: newUser.email,
@@ -27,23 +26,27 @@ export const signup_post = async (req: Request, res: Response) => {
         })
     } catch (err) {
         console.log(err)
-        return res.status(500).json({ message: "server error" })
+        return res.status(500).json({ message: "server error", status: 500, error: true })
     }
 }
 
 export const login_post = (req: Request, res: Response, next: NextFunction) => {
-    // #swagger.description = 'Endpoint for users to login'
     passport.authenticate("local", (err: Error, user: any, info: any) => {
         if (err) throw err
         if (!user)
             res.status(404).json({
                 message: "Could not login. Check email address and password",
                 status: 404,
+                error: true,
             })
         else {
             req.logIn(user, (err) => {
                 if (err) throw err
-                res.status(200).json({ message: "Successfully Authenticated", status: 200 })
+                res.status(200).json({
+                    message: "Successfully Authenticated",
+                    status: 200,
+                    error: false,
+                })
             })
         }
     })(req, res, next)
@@ -53,6 +56,8 @@ export const getMyUser_get = async (req: Request, res: Response) => {
     try {
         const user: any = req.currentUser
         return res.status(200).json({
+            status: 200,
+            error: false,
             user_id: user.id,
             full_name: user.full_name,
             email: user.email,
@@ -61,7 +66,7 @@ export const getMyUser_get = async (req: Request, res: Response) => {
         })
     } catch (err) {
         console.log(err)
-        return res.status(500).json({ message: "Server Error" })
+        return res.status(500).json({ message: "Server Error", status: 500, error: true })
     }
 }
 
@@ -71,11 +76,13 @@ export const logout_post = async (req: Request, res: Response) => {
         if (user) {
             req.session.destroy((err) => {
                 if (err) throw err
-                return res.status(200).json({ message: "Logged out successfully" })
+                return res
+                    .status(200)
+                    .json({ message: "Logged out successfully", status: 200, error: false })
             })
         }
     } catch (err) {
         console.log(err)
-        return res.status(500).json({ message: "Server Error" })
+        return res.status(500).json({ message: "Server Error", status: 500, error: true })
     }
 }

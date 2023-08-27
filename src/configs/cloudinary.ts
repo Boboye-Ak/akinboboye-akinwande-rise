@@ -45,7 +45,6 @@ export const deleteCloudinaryFile = async (publicId: string, cloudinaryUrl: stri
             resource_type: resourceType,
             invalidate: true,
         })
-        //await cloudinary.uploader.destroy(stringForDeleting)
     } catch (e) {
         console.log(e)
         throw e
@@ -63,7 +62,7 @@ export const clearCloudinaryFolder = async (folderName: string) => {
     }
 }
 
-export const compressURL = (url: string, percentageQuality: number):string => {
+export const compressURL = (url: string, percentageQuality: number): string => {
     const urlArray = url.split("upload/")
     urlArray.splice(1, 0, `upload/q_${percentageQuality}/`)
     return urlArray.join("")
@@ -72,7 +71,7 @@ export const compressURL = (url: string, percentageQuality: number):string => {
 export const removeFileExtension = (filename: string): string => {
     const lastDotIndex = filename.lastIndexOf(".")
     if (lastDotIndex === -1) {
-        return filename // No extension found
+        return filename
     }
     return filename.substring(0, lastDotIndex)
 }

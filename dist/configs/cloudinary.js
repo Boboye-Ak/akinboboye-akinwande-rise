@@ -44,7 +44,6 @@ const deleteCloudinaryFile = async (publicId, cloudinaryUrl) => {
             resource_type: resourceType,
             invalidate: true,
         });
-        //await cloudinary.uploader.destroy(stringForDeleting)
     }
     catch (e) {
         console.log(e);
@@ -73,7 +72,7 @@ exports.compressURL = compressURL;
 const removeFileExtension = (filename) => {
     const lastDotIndex = filename.lastIndexOf(".");
     if (lastDotIndex === -1) {
-        return filename; // No extension found
+        return filename;
     }
     return filename.substring(0, lastDotIndex);
 };
