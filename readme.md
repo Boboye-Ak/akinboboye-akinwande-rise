@@ -96,7 +96,7 @@ CLOUDINARY_FOLDER_NAME="cloudinary-folder-name"
 5. **Access the API:**
 
    The API should be accessible at `http://localhost:5000` if running on your local device.
-   It is also live remotely at `https//:akinboboye-akinwande-rise-production.up.railway.app`.
+   It is also hosted on railway at `https://akinboboye-akinwande-rise-production.up.railway.app`.
 
 ## API Endpoints
 
