@@ -42,8 +42,6 @@ const sessionStore = new (SequelizeStore(session.Store))({
     table: "session",
 })
 
-
-
 // Middleware
 app.use("/doc", serve, setup(swaggerFile))
 app.use(
@@ -86,8 +84,8 @@ app.use("/api/auth", authRouter)
 app.use("/api/files", fileRouter)
 
 // Test endpoint
-app.get("/test", (req: Request, res: Response) => {
-    res.status(200).json({ message: "hello there", status:200, error:false })
+app.get("/", (req: Request, res: Response) => {
+    res.status(200).json({ message: "Welcome to Akinboboye Akinwande's cloud storage", status: 200, error: false })
 })
 
 app.listen(PORT, () => {

@@ -106,7 +106,7 @@ CLOUDINARY_FOLDER_NAME="test-cloudinary-folder-name"
 
 ## API Endpoints
 
-- **GET /api/test**: Test the api to see if it's online
+- **GET /**: The Homepage
 - **POST /api/auth/signup**: Register and login a new user. It takes email, full_name and password(must pass validation criteria in the request body.)
 - **POST /api/auth/login**: Authenticate and get user session. Takes email and password in the request body
 - **GET /api/auth/myuser**: Get user data of logged in user(protected route)
