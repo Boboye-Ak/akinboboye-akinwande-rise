@@ -4,7 +4,7 @@ const { uploadFile, deleteCloudinaryFile } = require("../configs/cloudinary")
 import File from "../models/Files"
 import User from "../models/Users"
 import axios from "axios"
-import {  removeFileExtension } from "../configs/cloudinary"
+import { removeFileExtension } from "../configs/cloudinary"
 
 export const getFileList_get = async (req: Request, res: Response) => {
     try {

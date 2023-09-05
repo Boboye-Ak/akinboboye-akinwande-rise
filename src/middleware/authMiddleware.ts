@@ -14,20 +14,18 @@ export const userRequiresAuth = async (req: Request, res: Response, next: NextFu
             const userId = req.user
             const user = await User.findByPk(userId as number)
             if (!user) {
-                return res
-                    .status(404)
-                    .json({
-                        message: "User not found. It might have been deleted",
-                        status: 404,
-                        error: true,
-                    })
+                return res.status(404).json({
+                    message: "User not found. It might have been deleted",
+                    status: 404,
+                    error: true,
+                })
             }
             req.currentUser = user
             next()
         }
     } catch (e) {
         console.log(e)
-        return res.status(500).json({ message: "Server Error", status:500, error:true })
+        return res.status(500).json({ message: "Server Error", status: 500, error: true })
     }
 }
 

@@ -54,7 +54,7 @@ export const login_post = (req: Request, res: Response, next: NextFunction) => {
 
 export const getMyUser_get = async (req: Request, res: Response) => {
     try {
-        const user: any = req.currentUser
+        const user = req.currentUser
         return res.status(200).json({
             status: 200,
             error: false,

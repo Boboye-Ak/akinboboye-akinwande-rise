@@ -22,7 +22,7 @@ let admin1sessionCookie, admin2sessionCookie, intruderSessionCookie, fileId
 const testFilePath = path.join(__dirname, testFileName);
 const formData = new FormData();
 
-describe("/admin", () => {
+describe("admin endpoints", () => {
     before((done) => {
         //make admins
         User.update({ isAdmin: true }, { where: { email: credentials.admin1Credentials.email } })
@@ -62,7 +62,7 @@ describe("/admin", () => {
     })
 
 
-    describe("/files/flag", () => {
+    describe("api/files/flag", () => {
         it("responds with 404 if file does not exist", (done) => {
             const invalidFileId = 9999
             chai.request(app)

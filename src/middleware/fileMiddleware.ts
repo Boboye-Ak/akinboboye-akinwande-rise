@@ -5,7 +5,7 @@ import { compressURL, getResourceType } from "../configs/cloudinary"
 export const getFileExtension = (fileName: string): string => {
     const lastDotIndex = fileName.lastIndexOf(".")
     if (lastDotIndex === -1) {
-        return "" 
+        return ""
     }
     return fileName.slice(lastDotIndex + 1)
 }

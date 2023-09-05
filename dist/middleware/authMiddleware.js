@@ -19,9 +19,7 @@ const userRequiresAuth = async (req, res, next) => {
             const userId = req.user;
             const user = await Users_1.default.findByPk(userId);
             if (!user) {
-                return res
-                    .status(404)
-                    .json({
+                return res.status(404).json({
                     message: "User not found. It might have been deleted",
                     status: 404,
                     error: true,
