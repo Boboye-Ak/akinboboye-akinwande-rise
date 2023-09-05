@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express"
 import File from "../models/Files"
 import { compressURL, getResourceType } from "../configs/cloudinary"
+import { Op } from "sequelize"
 
 export const getFileExtension = (fileName: string): string => {
     const lastDotIndex = fileName.lastIndexOf(".")
@@ -14,7 +15,7 @@ export const getsFile = async (req: Request, res: Response, next: NextFunction) 
     try {
         const { id: fileId } = req.params
         const currentUser = req.currentUser
-        const file: any = await File.findOne({ where: { id: fileId } })
+        const file: any = await File.findOne({ where: { id: { [Op.eq]: fileId } } })
         if (!file) {
             return res.status(404).json({ message: "File not found.", status: 404, error: true })
         }

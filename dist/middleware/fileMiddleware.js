@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.mediaCompressor = exports.videoAndAudioOnly = exports.getsFile = exports.getFileExtension = void 0;
 const Files_1 = __importDefault(require("../models/Files"));
 const cloudinary_1 = require("../configs/cloudinary");
+const sequelize_1 = require("sequelize");
 const getFileExtension = (fileName) => {
     const lastDotIndex = fileName.lastIndexOf(".");
     if (lastDotIndex === -1) {
@@ -18,7 +19,7 @@ const getsFile = async (req, res, next) => {
     try {
         const { id: fileId } = req.params;
         const currentUser = req.currentUser;
-        const file = await Files_1.default.findOne({ where: { id: fileId } });
+        const file = await Files_1.default.findOne({ where: { id: { [sequelize_1.Op.eq]: fileId } } });
         if (!file) {
             return res.status(404).json({ message: "File not found.", status: 404, error: true });
         }
